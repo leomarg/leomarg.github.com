@@ -10,6 +10,9 @@
         <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
         <link rel="stylesheet" href="css/qgis2web.css">
         <link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/MarkerCluster.css">
+        <link rel="stylesheet" href="css/MarkerCluster.Default.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
         <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
         <link rel="stylesheet" href="css/leaflet-measure.css">
         <style>
@@ -37,12 +40,16 @@
         <script src="js/labels.js"></script>
         <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
         <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet.markercluster.js"></script>
+        <script src="js/leaflet-search.js"></script>
         <script src="data/CoberturalEstatalVeracruz_1.js"></script>
-        <script src="data/BaseMunicipiosGeneralCEPREVIDE_2.js"></script>
-        <script src="data/BaseRegionesCEPREVIDE_3.js"></script>
-        <script src="data/BaseZonasMetropolitanasCEPREVIDE_4.js"></script>
-        <script src="data/BaseMunicipiosGeneralPM_5.js"></script>
-        <script src="data/BaseAccionesProgramas2023CEPREVIDE_6.js"></script>
+        <script src="data/LmiteMunicipalVeracruz_2.js"></script>
+        <script src="data/BaseMunicipiosGeneralCEPREVIDE_3.js"></script>
+        <script src="data/BaseRegionesCEPREVIDE_4.js"></script>
+        <script src="data/BaseZonasMetropolitanasCEPREVIDE_5.js"></script>
+        <script src="data/BaseMunicipiosGeneralPlataforma_6.js"></script>
+        <script src="data/BaseAccionesProgramas2023CEPREVIDE_7.js"></script>
+        <script src="data/BaseCentroMunicipaldePrevencinCEPREVIDE_8.js"></script>
         <script>
         var highlightLayer;
         function highlightFeature(e) {
@@ -60,11 +67,12 @@
             }
         }
         var map = L.map('map', {
-            zoomControl:true, maxZoom:28, minZoom:1
-        }).fitBounds([[16.978162680020457,-100.59226528167699],[22.57968798002045,-91.31573246362905]]);
+            zoomControl:false, maxZoom:28, minZoom:1
+        }).fitBounds([[17.05779412718328,-100.79631170996282],[22.65879450412064,-90.29364130962182]]);
         var hash = new L.Hash(map);
         map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        // remove popup's row if "visible-with-data"
         function removeEmptyRowsFromPopupContent(content, feature) {
          var tempDiv = document.createElement('div');
          tempDiv.innerHTML = content;
@@ -78,15 +86,23 @@
          }
          return tempDiv.innerHTML;
         }
-        document.querySelector(".leaflet-popup-pane").addEventListener("load", function(event) {
-          var tagName = event.target.tagName,
-            popup = map._popup;
-          // Also check if flag is already set.
-          if (tagName === "IMG" && popup && !popup._updated) {
-            popup._updated = true; // Set flag to prevent looping.
-            popup.update();
-          }
-        }, true);
+        // add class to format popup if it contains media
+		function addClassToPopupIfMedia(content, popup) {
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = content;
+			if (tempDiv.querySelector('td img')) {
+				popup._contentNode.classList.add('media');
+					// Delay to force the redraw
+					setTimeout(function() {
+						popup.update();
+					}, 10);
+			} else {
+				popup._contentNode.classList.remove('media');
+			}
+		}
+        var zoomControl = L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
         var measureControl = new L.Control.Measure({
             position: 'topleft',
             primaryLengthUnit: 'meters',
@@ -95,10 +111,8 @@
             secondaryAreaUnit: 'hectares'
         });
         measureControl.addTo(map);
-        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
-        .innerHTML = '';
-        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
-        .className += ' fas fa-ruler';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].className += ' fas fa-ruler';
         var bounds_group = new L.featureGroup([]);
         function setBounds() {
         }
@@ -128,11 +142,11 @@
             });
             var popupContent = '<table>\
                 </table>';
-            layer.bindPopup(popupContent, {maxHeight: 400});
-            var popup = layer.getPopup();
-            var content = popup.getContent();
-            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
-            popup.setContent(updatedContent);
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
         }
 
         function style_CoberturalEstatalVeracruz_1_0() {
@@ -143,7 +157,7 @@
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
-                weight: 3.0, 
+                weight: 4.0, 
                 fill: true,
                 fillOpacity: 1,
                 fillColor: 'rgba(231,113,72,0.0)',
@@ -164,7 +178,56 @@
         });
         bounds_group.addLayer(layer_CoberturalEstatalVeracruz_1);
         map.addLayer(layer_CoberturalEstatalVeracruz_1);
-        function pop_BaseMunicipiosGeneralCEPREVIDE_2(feature, layer) {
+        function pop_LmiteMunicipalVeracruz_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (var i in e.target._eventParents) {
+                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
+                            e.target._eventParents[i].resetStyle(e.target);
+                        }
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_LmiteMunicipalVeracruz_2_0() {
+            return {
+                pane: 'pane_LmiteMunicipalVeracruz_2',
+                opacity: 1,
+                color: 'rgba(108,108,108,1.0)',
+                dashArray: '5.0,1.0,2.0,1.0',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(232,113,141,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_LmiteMunicipalVeracruz_2');
+        map.getPane('pane_LmiteMunicipalVeracruz_2').style.zIndex = 402;
+        map.getPane('pane_LmiteMunicipalVeracruz_2').style['mix-blend-mode'] = 'normal';
+        var layer_LmiteMunicipalVeracruz_2 = new L.geoJson(json_LmiteMunicipalVeracruz_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_LmiteMunicipalVeracruz_2',
+            layerName: 'layer_LmiteMunicipalVeracruz_2',
+            pane: 'pane_LmiteMunicipalVeracruz_2',
+            onEachFeature: pop_LmiteMunicipalVeracruz_2,
+            style: style_LmiteMunicipalVeracruz_2_0,
+        });
+        bounds_group.addLayer(layer_LmiteMunicipalVeracruz_2);
+        map.addLayer(layer_LmiteMunicipalVeracruz_2);
+        function pop_BaseMunicipiosGeneralCEPREVIDE_3(feature, layer) {
             layer.on({
                 mouseout: function(e) {
                     for (var i in e.target._eventParents) {
@@ -177,32 +240,31 @@
             });
             var popupContent = '<table>\
                     <tr>\
-                        <th scope="row">MUNICIPIO</th>\
-                        <td>' + (feature.properties['Base Munis'] !== null ? autolinker.link(feature.properties['Base Munis'].toLocaleString()) : '') + '</td>\
+                        <td colspan="2"><strong>MUNICIPIO</strong><br />' + (feature.properties['Base Munis'] !== null ? autolinker.link(feature.properties['Base Munis'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">POBLACIÓN CONAPO 2024</th>\
-                        <td>' + (feature.properties['POB_CONAPO_1'] !== null ? autolinker.link(feature.properties['POB_CONAPO_1'].toLocaleString()) : '') + '</td>\
+                        <td>' + (feature.properties['POB_CONA_1'] !== null ? autolinker.link(feature.properties['POB_CONA_1'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">INCIDENCIA DELICTIVA 2023</th>\
                         <td>' + (feature.properties['INC_DEL_23'] !== null ? autolinker.link(feature.properties['INC_DEL_23'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">GRADO DE INCIDENCIA 2024</th>\
-                        <td>' + (feature.properties['GRA_INC24'] !== null ? autolinker.link(feature.properties['GRA_INC24'].toLocaleString()) : '') + '</td>\
+                        <th scope="row">INCIDENCIA DELICTIVA 2024</th>\
+                        <td>' + (feature.properties['INC_DEL_24'] !== null ? autolinker.link(feature.properties['INC_DEL_24'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">VIOLENCIA FAMILIAR 2023</th>\
                         <td>' + (feature.properties['VIO_FAM_23'] !== null ? autolinker.link(feature.properties['VIO_FAM_23'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">VIOLENCIA GÉNERO 2023</th>\
-                        <td>' + (feature.properties['VIOL_GEN_2'] !== null ? autolinker.link(feature.properties['VIOL_GEN_2'].toLocaleString()) : '') + '</td>\
+                        <th scope="row">NARCOMENUDEO 2023</th>\
+                        <td>' + (feature.properties['NAR_23'] !== null ? autolinker.link(feature.properties['NAR_23'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">FORTAMUNDF 2024</th>\
-                        <td>' + (feature.properties['FORTAMUNDF'] !== null ? autolinker.link(feature.properties['FORTAMUNDF'].toLocaleString()) : '') + '</td>\
+                        <th scope="row">VIOLENCIA GÉNERO 2023</th>\
+                        <td>' + (feature.properties['VIOL_GEN_2'] !== null ? autolinker.link(feature.properties['VIOL_GEN_2'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">FORTAMUNDF 2024 SP (20%)</th>\
@@ -233,24 +295,24 @@
                         <td>' + (feature.properties['REM_24'] !== null ? autolinker.link(feature.properties['REM_24'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">REZAGO SOCIAL CONAPO 2020</th>\
-                        <td>' + (feature.properties['REZ_SOC_CO'] !== null ? autolinker.link(feature.properties['REZ_SOC_CO'].toLocaleString()) : '') + '</td>\
+                        <th scope="row">GRADO MARGINACION CONAPO 2020</th>\
+                        <td>' + (feature.properties['GDO_MARG_C'] !== null ? autolinker.link(feature.properties['GDO_MARG_C'].toLocaleString()) : '') + '</td>\
                     </tr>\
                 </table>';
-            layer.bindPopup(popupContent, {maxHeight: 400});
-            var popup = layer.getPopup();
-            var content = popup.getContent();
-            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
-            popup.setContent(updatedContent);
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
         }
 
-        function style_BaseMunicipiosGeneralCEPREVIDE_2_0(feature) {
+        function style_BaseMunicipiosGeneralCEPREVIDE_3_0(feature) {
             switch(String(feature.properties['GRA_INC24'])) {
                 case '1.Muy Alta':
                     return {
-                pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_2',
+                pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_3',
                 opacity: 1,
-                color: 'rgba(108,108,108,1.0)',
+                color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
@@ -263,9 +325,9 @@
                     break;
                 case '2.Alta':
                     return {
-                pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_2',
+                pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_3',
                 opacity: 1,
-                color: 'rgba(108,108,108,1.0)',
+                color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
@@ -278,9 +340,9 @@
                     break;
                 case '3.Media':
                     return {
-                pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_2',
+                pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_3',
                 opacity: 1,
-                color: 'rgba(108,108,108,1.0)',
+                color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
@@ -293,9 +355,9 @@
                     break;
                 case '4.Baja':
                     return {
-                pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_2',
+                pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_3',
                 opacity: 1,
-                color: 'rgba(108,108,108,1.0)',
+                color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
@@ -308,9 +370,9 @@
                     break;
                 case '5.Muy Baja':
                     return {
-                pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_2',
+                pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_3',
                 opacity: 1,
-                color: 'rgba(108,108,108,1.0)',
+                color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
@@ -323,20 +385,20 @@
                     break;
             }
         }
-        map.createPane('pane_BaseMunicipiosGeneralCEPREVIDE_2');
-        map.getPane('pane_BaseMunicipiosGeneralCEPREVIDE_2').style.zIndex = 402;
-        map.getPane('pane_BaseMunicipiosGeneralCEPREVIDE_2').style['mix-blend-mode'] = 'normal';
-        var layer_BaseMunicipiosGeneralCEPREVIDE_2 = new L.geoJson(json_BaseMunicipiosGeneralCEPREVIDE_2, {
+        map.createPane('pane_BaseMunicipiosGeneralCEPREVIDE_3');
+        map.getPane('pane_BaseMunicipiosGeneralCEPREVIDE_3').style.zIndex = 403;
+        map.getPane('pane_BaseMunicipiosGeneralCEPREVIDE_3').style['mix-blend-mode'] = 'normal';
+        var layer_BaseMunicipiosGeneralCEPREVIDE_3 = new L.geoJson(json_BaseMunicipiosGeneralCEPREVIDE_3, {
             attribution: '',
             interactive: true,
-            dataVar: 'json_BaseMunicipiosGeneralCEPREVIDE_2',
-            layerName: 'layer_BaseMunicipiosGeneralCEPREVIDE_2',
-            pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_2',
-            onEachFeature: pop_BaseMunicipiosGeneralCEPREVIDE_2,
-            style: style_BaseMunicipiosGeneralCEPREVIDE_2_0,
+            dataVar: 'json_BaseMunicipiosGeneralCEPREVIDE_3',
+            layerName: 'layer_BaseMunicipiosGeneralCEPREVIDE_3',
+            pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_3',
+            onEachFeature: pop_BaseMunicipiosGeneralCEPREVIDE_3,
+            style: style_BaseMunicipiosGeneralCEPREVIDE_3_0,
         });
-        bounds_group.addLayer(layer_BaseMunicipiosGeneralCEPREVIDE_2);
-        function pop_BaseRegionesCEPREVIDE_3(feature, layer) {
+        bounds_group.addLayer(layer_BaseMunicipiosGeneralCEPREVIDE_3);
+        function pop_BaseRegionesCEPREVIDE_4(feature, layer) {
             layer.on({
                 mouseout: function(e) {
                     for (var i in e.target._eventParents) {
@@ -349,7 +411,7 @@
             });
             var popupContent = '<table>\
                     <tr>\
-                        <td colspan="2"><strong>NOMBRE REG</strong><br />' + (feature.properties['NOMBRE REG'] !== null ? autolinker.link(feature.properties['NOMBRE REG'].toLocaleString()) : '') + '</td>\
+                        <td class="visible-with-data" id="NOMBRE"colspan="2"><strong>MUNICIPIO</strong><br />' + (feature.properties['NOMBRE'] !== null ? autolinker.link(feature.properties['NOMBRE'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">POBLACION TOTAL (PROY23) CONAPO</th>\
@@ -373,7 +435,7 @@
                     </tr>\
                     <tr>\
                         <th scope="row">POBLACION TOTAL (PROY24) CONAPO</th>\
-                        <td>' + (feature.properties['POB_TOT_CO_1'] !== null ? autolinker.link(feature.properties['POB_TOT_CO_1'].toLocaleString()) : '') + '</td>\
+                        <td>' + (feature.properties['POB_TOT__1'] !== null ? autolinker.link(feature.properties['POB_TOT__1'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">INCIDENCIA DELICTIVA (ABSOLUTOS) 24</th>\
@@ -392,18 +454,18 @@
                         <td>' + (feature.properties['VIO_GEN_24'] !== null ? autolinker.link(feature.properties['VIO_GEN_24'].toLocaleString()) : '') + '</td>\
                     </tr>\
                 </table>';
-            layer.bindPopup(popupContent, {maxHeight: 400});
-            var popup = layer.getPopup();
-            var content = popup.getContent();
-            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
-            popup.setContent(updatedContent);
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
         }
 
-        function style_BaseRegionesCEPREVIDE_3_0(feature) {
-            switch(String(feature.properties['INC_DEL_24_1'])) {
-                case '260.43':
+        function style_BaseRegionesCEPREVIDE_4_0(feature) {
+            switch(String(feature.properties['INC_DEL_23'])) {
+                case '739.45':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_3',
+                pane: 'pane_BaseRegionesCEPREVIDE_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -416,9 +478,9 @@
                 interactive: true,
             }
                     break;
-                case '261.04':
+                case '748.53':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_3',
+                pane: 'pane_BaseRegionesCEPREVIDE_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -431,9 +493,9 @@
                 interactive: true,
             }
                     break;
-                case '288.64':
+                case '848.69':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_3',
+                pane: 'pane_BaseRegionesCEPREVIDE_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -446,9 +508,9 @@
                 interactive: true,
             }
                     break;
-                case '299.3':
+                case '858.5':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_3',
+                pane: 'pane_BaseRegionesCEPREVIDE_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -461,9 +523,9 @@
                 interactive: true,
             }
                     break;
-                case '312.02':
+                case '866.65':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_3',
+                pane: 'pane_BaseRegionesCEPREVIDE_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -476,9 +538,9 @@
                 interactive: true,
             }
                     break;
-                case '314.75':
+                case '882.34':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_3',
+                pane: 'pane_BaseRegionesCEPREVIDE_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -491,9 +553,9 @@
                 interactive: true,
             }
                     break;
-                case '319.29':
+                case '901.51':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_3',
+                pane: 'pane_BaseRegionesCEPREVIDE_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -506,9 +568,9 @@
                 interactive: true,
             }
                     break;
-                case '337.08':
+                case '947.41':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_3',
+                pane: 'pane_BaseRegionesCEPREVIDE_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -521,9 +583,9 @@
                 interactive: true,
             }
                     break;
-                case '420.58':
+                case '1131.16':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_3',
+                pane: 'pane_BaseRegionesCEPREVIDE_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -536,9 +598,9 @@
                 interactive: true,
             }
                     break;
-                case '502.58':
+                case '1524.62':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_3',
+                pane: 'pane_BaseRegionesCEPREVIDE_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -553,20 +615,20 @@
                     break;
             }
         }
-        map.createPane('pane_BaseRegionesCEPREVIDE_3');
-        map.getPane('pane_BaseRegionesCEPREVIDE_3').style.zIndex = 403;
-        map.getPane('pane_BaseRegionesCEPREVIDE_3').style['mix-blend-mode'] = 'normal';
-        var layer_BaseRegionesCEPREVIDE_3 = new L.geoJson(json_BaseRegionesCEPREVIDE_3, {
+        map.createPane('pane_BaseRegionesCEPREVIDE_4');
+        map.getPane('pane_BaseRegionesCEPREVIDE_4').style.zIndex = 404;
+        map.getPane('pane_BaseRegionesCEPREVIDE_4').style['mix-blend-mode'] = 'normal';
+        var layer_BaseRegionesCEPREVIDE_4 = new L.geoJson(json_BaseRegionesCEPREVIDE_4, {
             attribution: '',
             interactive: true,
-            dataVar: 'json_BaseRegionesCEPREVIDE_3',
-            layerName: 'layer_BaseRegionesCEPREVIDE_3',
-            pane: 'pane_BaseRegionesCEPREVIDE_3',
-            onEachFeature: pop_BaseRegionesCEPREVIDE_3,
-            style: style_BaseRegionesCEPREVIDE_3_0,
+            dataVar: 'json_BaseRegionesCEPREVIDE_4',
+            layerName: 'layer_BaseRegionesCEPREVIDE_4',
+            pane: 'pane_BaseRegionesCEPREVIDE_4',
+            onEachFeature: pop_BaseRegionesCEPREVIDE_4,
+            style: style_BaseRegionesCEPREVIDE_4_0,
         });
-        bounds_group.addLayer(layer_BaseRegionesCEPREVIDE_3);
-        function pop_BaseZonasMetropolitanasCEPREVIDE_4(feature, layer) {
+        bounds_group.addLayer(layer_BaseRegionesCEPREVIDE_4);
+        function pop_BaseZonasMetropolitanasCEPREVIDE_5(feature, layer) {
             layer.on({
                 mouseout: function(e) {
                     for (var i in e.target._eventParents) {
@@ -622,20 +684,20 @@
                         <td>' + (feature.properties['VIO_GEN_24'] !== null ? autolinker.link(feature.properties['VIO_GEN_24'].toLocaleString()) : '') + '</td>\
                     </tr>\
                 </table>';
-            layer.bindPopup(popupContent, {maxHeight: 400});
-            var popup = layer.getPopup();
-            var content = popup.getContent();
-            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
-            popup.setContent(updatedContent);
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
         }
 
-        function style_BaseZonasMetropolitanasCEPREVIDE_4_0(feature) {
+        function style_BaseZonasMetropolitanasCEPREVIDE_5_0(feature) {
             switch(String(feature.properties['VIO_GEN_24_1'])) {
                 case '301.78':
                     return {
-                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_4',
+                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
                 opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
+                color: 'rgba(108,108,108,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
@@ -648,9 +710,9 @@
                     break;
                 case '327.61':
                     return {
-                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_4',
+                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
                 opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
+                color: 'rgba(108,108,108,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
@@ -663,9 +725,9 @@
                     break;
                 case '331.92':
                     return {
-                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_4',
+                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
                 opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
+                color: 'rgba(108,108,108,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
@@ -678,9 +740,9 @@
                     break;
                 case '349.7':
                     return {
-                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_4',
+                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
                 opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
+                color: 'rgba(108,108,108,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
@@ -693,9 +755,9 @@
                     break;
                 case '442.15':
                     return {
-                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_4',
+                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
                 opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
+                color: 'rgba(108,108,108,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
@@ -708,9 +770,9 @@
                     break;
                 case '460.66':
                     return {
-                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_4',
+                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
                 opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
+                color: 'rgba(108,108,108,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
@@ -723,9 +785,9 @@
                     break;
                 case '516.64':
                     return {
-                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_4',
+                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
                 opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
+                color: 'rgba(108,108,108,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
@@ -738,13 +800,13 @@
                     break;
                 case '542.94':
                     return {
-                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_4',
+                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
                 opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
+                color: 'rgba(108,108,108,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
-                weight: 1.0, 
+                weight: 1, 
                 fill: true,
                 fillOpacity: 1,
                 fillColor: 'rgba(127,39,4,1.0)',
@@ -753,20 +815,20 @@
                     break;
             }
         }
-        map.createPane('pane_BaseZonasMetropolitanasCEPREVIDE_4');
-        map.getPane('pane_BaseZonasMetropolitanasCEPREVIDE_4').style.zIndex = 404;
-        map.getPane('pane_BaseZonasMetropolitanasCEPREVIDE_4').style['mix-blend-mode'] = 'normal';
-        var layer_BaseZonasMetropolitanasCEPREVIDE_4 = new L.geoJson(json_BaseZonasMetropolitanasCEPREVIDE_4, {
+        map.createPane('pane_BaseZonasMetropolitanasCEPREVIDE_5');
+        map.getPane('pane_BaseZonasMetropolitanasCEPREVIDE_5').style.zIndex = 405;
+        map.getPane('pane_BaseZonasMetropolitanasCEPREVIDE_5').style['mix-blend-mode'] = 'normal';
+        var layer_BaseZonasMetropolitanasCEPREVIDE_5 = new L.geoJson(json_BaseZonasMetropolitanasCEPREVIDE_5, {
             attribution: '',
             interactive: true,
-            dataVar: 'json_BaseZonasMetropolitanasCEPREVIDE_4',
-            layerName: 'layer_BaseZonasMetropolitanasCEPREVIDE_4',
-            pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_4',
-            onEachFeature: pop_BaseZonasMetropolitanasCEPREVIDE_4,
-            style: style_BaseZonasMetropolitanasCEPREVIDE_4_0,
+            dataVar: 'json_BaseZonasMetropolitanasCEPREVIDE_5',
+            layerName: 'layer_BaseZonasMetropolitanasCEPREVIDE_5',
+            pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
+            onEachFeature: pop_BaseZonasMetropolitanasCEPREVIDE_5,
+            style: style_BaseZonasMetropolitanasCEPREVIDE_5_0,
         });
-        bounds_group.addLayer(layer_BaseZonasMetropolitanasCEPREVIDE_4);
-        function pop_BaseMunicipiosGeneralPM_5(feature, layer) {
+        bounds_group.addLayer(layer_BaseZonasMetropolitanasCEPREVIDE_5);
+        function pop_BaseMunicipiosGeneralPlataforma_6(feature, layer) {
             layer.on({
                 mouseout: function(e) {
                     for (var i in e.target._eventParents) {
@@ -779,74 +841,78 @@
             });
             var popupContent = '<table>\
                     <tr>\
-                        <th scope="row">VISITADO</th>\
-                        <td>' + (feature.properties['MUN_VIS'] !== null ? autolinker.link(feature.properties['MUN_VIS'].toLocaleString()) : '') + '</td>\
+                        <td class="visible-with-data" id="MUNICIPIO"colspan="2"><strong>MUNICIPIO</strong><br />' + (feature.properties['MUNICIPIO'] !== null ? autolinker.link(feature.properties['MUNICIPIO'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <td class="visible-with-data" id="NOM_MUN"colspan="2"><strong>MUNICIPIO</strong><br />' + (feature.properties['NOM_MUN'] !== null ? autolinker.link(feature.properties['NOM_MUN'].toLocaleString()) : '') + '</td>\
+                        <th scope="row">VISITADO EL</th>\
+                        <td>' + (feature.properties['VIS_EL'] !== null ? autolinker.link(feature.properties['VIS_EL'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">MANDO</th>\
                         <td>' + (feature.properties['MANDO'] !== null ? autolinker.link(feature.properties['MANDO'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">IDEAL ELEMENTOS</th>\
+                        <th scope="row">POBLACIÓN CONAPO (PROY24)</th>\
+                        <td>' + (feature.properties['POB_CON24'] !== null ? autolinker.link(feature.properties['POB_CON24'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">ESTADO DE FUERZA (IDEAL ONU)</th>\
                         <td>' + (feature.properties['IDE_ELE'] !== null ? autolinker.link(feature.properties['IDE_ELE'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">COMPROMISO FASP 21-23  - P.M.</th>\
-                        <td>' + (feature.properties['FASP_21_23'] !== null ? autolinker.link(feature.properties['FASP_21_23'].toLocaleString()) : '') + '</td>\
+                        <th scope="row">COMPROMISO PLATAFORMA</th>\
+                        <td>' + (feature.properties['COMP_PM'] !== null ? autolinker.link(feature.properties['COMP_PM'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">COMPROMISO FASP 21-23 IPH</th>\
-                        <td>' + (feature.properties['FASP_21__1'] !== null ? autolinker.link(feature.properties['FASP_21__1'].toLocaleString()) : '') + '</td>\
+                        <th scope="row">COMPROMISO SUMINISTRO</th>\
+                        <td>' + (feature.properties['COMP_SM'] !== null ? autolinker.link(feature.properties['COMP_SM'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">EQUIPO FASP 2022</th>\
+                        <th scope="row">EQUIPAMIENTO FASP 2022</th>\
                         <td>' + (feature.properties['EQU_2022'] !== null ? autolinker.link(feature.properties['EQU_2022'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">EQUIPO FASP 2023</th>\
-                        <td>' + (feature.properties['EQU_2023'] !== null ? autolinker.link(feature.properties['EQU_2023'].toLocaleString()) : '') + '</td>\
+                        <th scope="row">EQUIPAMIENTO FASP 2023</th>\
+                        <td class="visible-with-data" id="EQU_2023">' + (feature.properties['EQU_2023'] !== null ? autolinker.link(feature.properties['EQU_2023'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">ELEMENTOS ACTIVOS RNPSP (MAR24)</th>\
-                        <td>' + (feature.properties['RNPSP_MAR2'] !== null ? autolinker.link(feature.properties['RNPSP_MAR2'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">SUMINISTRAN RND</th>\
-                        <td>' + (feature.properties['SUM_RND'] !== null ? autolinker.link(feature.properties['SUM_RND'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">SUMINISTRAN IPH</th>\
-                        <td>' + (feature.properties['SUM_IPH'] !== null ? autolinker.link(feature.properties['SUM_IPH'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">A TRAVES DE</th>\
-                        <td>' + (feature.properties['A_TRAV_DE'] !== null ? autolinker.link(feature.properties['A_TRAV_DE'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">SITUACION ACTUAL</th>\
-                        <td>' + (feature.properties['SIT_ACT_JU'] !== null ? autolinker.link(feature.properties['SIT_ACT_JU'].toLocaleString()) : '') + '</td>\
+                        <th scope="row">SITUACION JUNIO 2024</th>\
+                        <td>' + (feature.properties['SIT_JUN24'] !== null ? autolinker.link(feature.properties['SIT_JUN24'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">FECHA DE CONEXIÓN</th>\
                         <td>' + (feature.properties['FEC_CON'] !== null ? autolinker.link(feature.properties['FEC_CON'].toLocaleString()) : '') + '</td>\
                     </tr>\
+                    <tr>\
+                        <th scope="row">ELE. ACTIVOS (RNPSP-MAR24)</th>\
+                        <td>' + (feature.properties['RNPSP_MAR2'] !== null ? autolinker.link(feature.properties['RNPSP_MAR2'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">USUARIOS RND</th>\
+                        <td>' + (feature.properties['USU_RND'] !== null ? autolinker.link(feature.properties['USU_RND'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">USUARIOS IPH</th>\
+                        <td>' + (feature.properties['USU_IPH'] !== null ? autolinker.link(feature.properties['USU_IPH'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SUMINISTRA IPH</th>\
+                        <td>' + (feature.properties['SUM_IPH'] !== null ? autolinker.link(feature.properties['SUM_IPH'].toLocaleString()) : '') + '</td>\
+                    </tr>\
                 </table>';
-            layer.bindPopup(popupContent, {maxHeight: 400});
-            var popup = layer.getPopup();
-            var content = popup.getContent();
-            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
-            popup.setContent(updatedContent);
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
         }
 
-        function style_BaseMunicipiosGeneralPM_5_0(feature) {
+        function style_BaseMunicipiosGeneralPlataforma_6_0(feature) {
             if (feature.properties['POB_CON24'] >= 1561.000000 && feature.properties['POB_CON24'] <= 9734.800000 ) {
                 return {
-                pane: 'pane_BaseMunicipiosGeneralPM_5',
+                pane: 'pane_BaseMunicipiosGeneralPlataforma_6',
                 opacity: 1,
-                color: 'rgba(137,137,137,1.0)',
+                color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
@@ -859,9 +925,9 @@
             }
             if (feature.properties['POB_CON24'] >= 9734.800000 && feature.properties['POB_CON24'] <= 16480.000000 ) {
                 return {
-                pane: 'pane_BaseMunicipiosGeneralPM_5',
+                pane: 'pane_BaseMunicipiosGeneralPlataforma_6',
                 opacity: 1,
-                color: 'rgba(137,137,137,1.0)',
+                color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
@@ -874,9 +940,9 @@
             }
             if (feature.properties['POB_CON24'] >= 16480.000000 && feature.properties['POB_CON24'] <= 24964.000000 ) {
                 return {
-                pane: 'pane_BaseMunicipiosGeneralPM_5',
+                pane: 'pane_BaseMunicipiosGeneralPlataforma_6',
                 opacity: 1,
-                color: 'rgba(137,137,137,1.0)',
+                color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
@@ -889,9 +955,9 @@
             }
             if (feature.properties['POB_CON24'] >= 24964.000000 && feature.properties['POB_CON24'] <= 47396.000000 ) {
                 return {
-                pane: 'pane_BaseMunicipiosGeneralPM_5',
+                pane: 'pane_BaseMunicipiosGeneralPlataforma_6',
                 opacity: 1,
-                color: 'rgba(137,137,137,1.0)',
+                color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
@@ -904,9 +970,9 @@
             }
             if (feature.properties['POB_CON24'] >= 47396.000000 && feature.properties['POB_CON24'] <= 623561.000000 ) {
                 return {
-                pane: 'pane_BaseMunicipiosGeneralPM_5',
+                pane: 'pane_BaseMunicipiosGeneralPlataforma_6',
                 opacity: 1,
-                color: 'rgba(137,137,137,1.0)',
+                color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
@@ -918,20 +984,20 @@
             }
             }
         }
-        map.createPane('pane_BaseMunicipiosGeneralPM_5');
-        map.getPane('pane_BaseMunicipiosGeneralPM_5').style.zIndex = 405;
-        map.getPane('pane_BaseMunicipiosGeneralPM_5').style['mix-blend-mode'] = 'normal';
-        var layer_BaseMunicipiosGeneralPM_5 = new L.geoJson(json_BaseMunicipiosGeneralPM_5, {
+        map.createPane('pane_BaseMunicipiosGeneralPlataforma_6');
+        map.getPane('pane_BaseMunicipiosGeneralPlataforma_6').style.zIndex = 406;
+        map.getPane('pane_BaseMunicipiosGeneralPlataforma_6').style['mix-blend-mode'] = 'normal';
+        var layer_BaseMunicipiosGeneralPlataforma_6 = new L.geoJson(json_BaseMunicipiosGeneralPlataforma_6, {
             attribution: '',
             interactive: true,
-            dataVar: 'json_BaseMunicipiosGeneralPM_5',
-            layerName: 'layer_BaseMunicipiosGeneralPM_5',
-            pane: 'pane_BaseMunicipiosGeneralPM_5',
-            onEachFeature: pop_BaseMunicipiosGeneralPM_5,
-            style: style_BaseMunicipiosGeneralPM_5_0,
+            dataVar: 'json_BaseMunicipiosGeneralPlataforma_6',
+            layerName: 'layer_BaseMunicipiosGeneralPlataforma_6',
+            pane: 'pane_BaseMunicipiosGeneralPlataforma_6',
+            onEachFeature: pop_BaseMunicipiosGeneralPlataforma_6,
+            style: style_BaseMunicipiosGeneralPlataforma_6_0,
         });
-        bounds_group.addLayer(layer_BaseMunicipiosGeneralPM_5);
-        function pop_BaseAccionesProgramas2023CEPREVIDE_6(feature, layer) {
+        bounds_group.addLayer(layer_BaseMunicipiosGeneralPlataforma_6);
+        function pop_BaseAccionesProgramas2023CEPREVIDE_7(feature, layer) {
             layer.on({
                 mouseout: function(e) {
                     for (var i in e.target._eventParents) {
@@ -968,132 +1034,130 @@
                         <td>' + (feature.properties['Total_pers'] !== null ? autolinker.link(feature.properties['Total_pers'].toLocaleString()) : '') + '</td>\
                     </tr>\
                 </table>';
-            layer.bindPopup(popupContent, {maxHeight: 400});
-            var popup = layer.getPopup();
-            var content = popup.getContent();
-            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
-            popup.setContent(updatedContent);
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
         }
 
-        function style_BaseAccionesProgramas2023CEPREVIDE_6_0(feature) {
-            switch(String(feature.properties['Programa'])) {
-                case 'Programa Cultura de la Legalidad':
-                    return {
-                pane: 'pane_BaseAccionesProgramas2023CEPREVIDE_6',
-                radius: 4.8,
+        function style_BaseAccionesProgramas2023CEPREVIDE_7_0() {
+            return {
+                pane: 'pane_BaseAccionesProgramas2023CEPREVIDE_7',
+                radius: 5.599999999999998,
                 opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
+                color: 'rgba(50,87,128,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
-                weight: 1,
+                weight: 2.0,
                 fill: true,
                 fillOpacity: 1,
-                fillColor: 'rgba(250,250,250,1.0)',
+                fillColor: 'rgba(72,123,182,1.0)',
                 interactive: true,
-            }
-                    break;
-                case 'Programa Escolar':
-                    return {
-                pane: 'pane_BaseAccionesProgramas2023CEPREVIDE_6',
-                radius: 4.8,
-                opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1,
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(201,201,201,1.0)',
-                interactive: true,
-            }
-                    break;
-                case 'Programa Fortalecimiento Municipal':
-                    return {
-                pane: 'pane_BaseAccionesProgramas2023CEPREVIDE_6',
-                radius: 4.8,
-                opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1,
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(152,152,152,1.0)',
-                interactive: true,
-            }
-                    break;
-                case 'Programa Grupos Vulnerables':
-                    return {
-                pane: 'pane_BaseAccionesProgramas2023CEPREVIDE_6',
-                radius: 4.8,
-                opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1,
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(103,103,103,1.0)',
-                interactive: true,
-            }
-                    break;
-                case 'Programa Participación Ciudadana':
-                    return {
-                pane: 'pane_BaseAccionesProgramas2023CEPREVIDE_6',
-                radius: 4.8,
-                opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1,
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(54,54,54,1.0)',
-                interactive: true,
-            }
-                    break;
-                case 'Programa Rehabilitación de Espacios Públicos':
-                    return {
-                pane: 'pane_BaseAccionesProgramas2023CEPREVIDE_6',
-                radius: 4.8,
-                opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1,
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(5,5,5,1.0)',
-                interactive: true,
-            }
-                    break;
             }
         }
-        map.createPane('pane_BaseAccionesProgramas2023CEPREVIDE_6');
-        map.getPane('pane_BaseAccionesProgramas2023CEPREVIDE_6').style.zIndex = 406;
-        map.getPane('pane_BaseAccionesProgramas2023CEPREVIDE_6').style['mix-blend-mode'] = 'normal';
-        var layer_BaseAccionesProgramas2023CEPREVIDE_6 = new L.geoJson(json_BaseAccionesProgramas2023CEPREVIDE_6, {
+        map.createPane('pane_BaseAccionesProgramas2023CEPREVIDE_7');
+        map.getPane('pane_BaseAccionesProgramas2023CEPREVIDE_7').style.zIndex = 407;
+        map.getPane('pane_BaseAccionesProgramas2023CEPREVIDE_7').style['mix-blend-mode'] = 'normal';
+        var layer_BaseAccionesProgramas2023CEPREVIDE_7 = new L.geoJson(json_BaseAccionesProgramas2023CEPREVIDE_7, {
             attribution: '',
             interactive: true,
-            dataVar: 'json_BaseAccionesProgramas2023CEPREVIDE_6',
-            layerName: 'layer_BaseAccionesProgramas2023CEPREVIDE_6',
-            pane: 'pane_BaseAccionesProgramas2023CEPREVIDE_6',
-            onEachFeature: pop_BaseAccionesProgramas2023CEPREVIDE_6,
+            dataVar: 'json_BaseAccionesProgramas2023CEPREVIDE_7',
+            layerName: 'layer_BaseAccionesProgramas2023CEPREVIDE_7',
+            pane: 'pane_BaseAccionesProgramas2023CEPREVIDE_7',
+            onEachFeature: pop_BaseAccionesProgramas2023CEPREVIDE_7,
             pointToLayer: function (feature, latlng) {
                 var context = {
                     feature: feature,
                     variables: {}
                 };
-                return L.circleMarker(latlng, style_BaseAccionesProgramas2023CEPREVIDE_6_0(feature));
+                return L.circleMarker(latlng, style_BaseAccionesProgramas2023CEPREVIDE_7_0(feature));
             },
         });
-        bounds_group.addLayer(layer_BaseAccionesProgramas2023CEPREVIDE_6);
+        var cluster_BaseAccionesProgramas2023CEPREVIDE_7 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_BaseAccionesProgramas2023CEPREVIDE_7.addLayer(layer_BaseAccionesProgramas2023CEPREVIDE_7);
+
+        bounds_group.addLayer(layer_BaseAccionesProgramas2023CEPREVIDE_7);
+        function pop_BaseCentroMunicipaldePrevencinCEPREVIDE_8(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (var i in e.target._eventParents) {
+                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
+                            e.target._eventParents[i].resetStyle(e.target);
+                        }
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td class="visible-with-data" id="NOM_MUN"colspan="2"><strong>MUNICIPIO</strong><br />' + (feature.properties['NOM_MUN'] !== null ? autolinker.link(feature.properties['NOM_MUN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LOCALIDAD</th>\
+                        <td>' + (feature.properties['NOM_LOC'] !== null ? autolinker.link(feature.properties['NOM_LOC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">POBLACIÓN TOTAL</th>\
+                        <td>' + (feature.properties['POB_TOTAL'] !== null ? autolinker.link(feature.properties['POB_TOTAL'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">ETAPA</th>\
+                        <td>' + (feature.properties['ETAPA'] !== null ? autolinker.link(feature.properties['ETAPA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">CENTRO MUNICIPAL DE PREVENCIÓN</th>\
+                        <td>' + (feature.properties['CEN_MUN'] !== null ? autolinker.link(feature.properties['CEN_MUN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_BaseCentroMunicipaldePrevencinCEPREVIDE_8_0() {
+            return {
+                pane: 'pane_BaseCentroMunicipaldePrevencinCEPREVIDE_8',
+                radius: 5.6000000000000005,
+                opacity: 1,
+                color: 'rgba(250,250,26,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,127,0,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_BaseCentroMunicipaldePrevencinCEPREVIDE_8');
+        map.getPane('pane_BaseCentroMunicipaldePrevencinCEPREVIDE_8').style.zIndex = 408;
+        map.getPane('pane_BaseCentroMunicipaldePrevencinCEPREVIDE_8').style['mix-blend-mode'] = 'normal';
+        var layer_BaseCentroMunicipaldePrevencinCEPREVIDE_8 = new L.geoJson(json_BaseCentroMunicipaldePrevencinCEPREVIDE_8, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_BaseCentroMunicipaldePrevencinCEPREVIDE_8',
+            layerName: 'layer_BaseCentroMunicipaldePrevencinCEPREVIDE_8',
+            pane: 'pane_BaseCentroMunicipaldePrevencinCEPREVIDE_8',
+            onEachFeature: pop_BaseCentroMunicipaldePrevencinCEPREVIDE_8,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_BaseCentroMunicipaldePrevencinCEPREVIDE_8_0(feature));
+            },
+        });
+        var cluster_BaseCentroMunicipaldePrevencinCEPREVIDE_8 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_BaseCentroMunicipaldePrevencinCEPREVIDE_8.addLayer(layer_BaseCentroMunicipaldePrevencinCEPREVIDE_8);
+
+        bounds_group.addLayer(layer_BaseCentroMunicipaldePrevencinCEPREVIDE_8);
         var osmGeocoder = new L.Control.Geocoder({
             collapsed: true,
             position: 'topleft',
@@ -1106,11 +1170,13 @@
         .title += 'Search for a place';
         var baseMaps = {};
         var overlaysTree = [
-            {label: 'Base Acciones /Programas 2023 CEPREVIDE<br /><table><tr><td style="text-align: center;"><img src="legend/BaseAccionesProgramas2023CEPREVIDE_6_ProgramaCulturadelaLegalidad0.png" /></td><td>Programa Cultura de la Legalidad</td></tr><tr><td style="text-align: center;"><img src="legend/BaseAccionesProgramas2023CEPREVIDE_6_ProgramaEscolar1.png" /></td><td>Programa Escolar</td></tr><tr><td style="text-align: center;"><img src="legend/BaseAccionesProgramas2023CEPREVIDE_6_ProgramaFortalecimientoMunicipal2.png" /></td><td>Programa Fortalecimiento Municipal</td></tr><tr><td style="text-align: center;"><img src="legend/BaseAccionesProgramas2023CEPREVIDE_6_ProgramaGruposVulnerables3.png" /></td><td>Programa Grupos Vulnerables</td></tr><tr><td style="text-align: center;"><img src="legend/BaseAccionesProgramas2023CEPREVIDE_6_ProgramaParticipaciónCiudadana4.png" /></td><td>Programa Participación Ciudadana</td></tr><tr><td style="text-align: center;"><img src="legend/BaseAccionesProgramas2023CEPREVIDE_6_ProgramaRehabilitacióndeEspaciosPúblicos5.png" /></td><td>Programa Rehabilitación de Espacios Públicos</td></tr></table>', layer: layer_BaseAccionesProgramas2023CEPREVIDE_6},
-            {label: 'Base Municipios General PM<br /><table><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralPM_5_156197350.png" /></td><td>1561 - 9735</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralPM_5_9735164801.png" /></td><td>9735 - 16480</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralPM_5_16480249642.png" /></td><td>16480 - 24964</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralPM_5_24964473963.png" /></td><td>24964 - 47396</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralPM_5_473966235614.png" /></td><td>47396 - 623561</td></tr></table>', layer: layer_BaseMunicipiosGeneralPM_5},
-            {label: 'Base Zonas Metropolitanas CEPREVIDE<br /><table><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_4_301770.png" /></td><td>301.77</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_4_327611.png" /></td><td>327.61</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_4_331922.png" /></td><td>331.92</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_4_349693.png" /></td><td>349.69</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_4_442154.png" /></td><td>442.15</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_4_460665.png" /></td><td>460.66</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_4_516646.png" /></td><td>516.64</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_4_542947.png" /></td><td>542.94</td></tr></table>', layer: layer_BaseZonasMetropolitanasCEPREVIDE_4},
-            {label: 'Base Regiones CEPREVIDE<br /><table><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_3_260430.png" /></td><td>260.43</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_3_261041.png" /></td><td>261.04</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_3_288632.png" /></td><td>288.63</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_3_299303.png" /></td><td>299.30</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_3_312014.png" /></td><td>312.01</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_3_314755.png" /></td><td>314.75</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_3_319296.png" /></td><td>319.29</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_3_337077.png" /></td><td>337.07</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_3_420578.png" /></td><td>420.57</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_3_502579.png" /></td><td>502.57</td></tr></table>', layer: layer_BaseRegionesCEPREVIDE_3},
-            {label: 'Base Municipios General CEPREVIDE<br /><table><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralCEPREVIDE_2_1MuyAlta0.png" /></td><td>1.Muy Alta</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralCEPREVIDE_2_2Alta1.png" /></td><td>2.Alta</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralCEPREVIDE_2_3Media2.png" /></td><td>3.Media</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralCEPREVIDE_2_4Baja3.png" /></td><td>4.Baja</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralCEPREVIDE_2_5MuyBaja4.png" /></td><td>5.Muy Baja</td></tr></table>', layer: layer_BaseMunicipiosGeneralCEPREVIDE_2},
+            {label: '<img src="legend/BaseCentroMunicipaldePrevencinCEPREVIDE_8.png" /> Base Centro Municipal de Prevención CEPREVIDE', layer: cluster_BaseCentroMunicipaldePrevencinCEPREVIDE_8},
+            {label: '<img src="legend/BaseAccionesProgramas2023CEPREVIDE_7.png" /> Base Acciones /Programas 2023 CEPREVIDE', layer: cluster_BaseAccionesProgramas2023CEPREVIDE_7},
+            {label: 'Base Municipios General Plataforma<br /><table><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralPlataforma_6_156197350.png" /></td><td>   1,561 -     9,735</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralPlataforma_6_9735164801.png" /></td><td>  9,735 -    16,480</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralPlataforma_6_16480249642.png" /></td><td>16 480 -    24,964</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralPlataforma_6_24964473963.png" /></td><td>24,964 -   47,396</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralPlataforma_6_473966235614.png" /></td><td>47,396 - 623,561</td></tr></table>', layer: layer_BaseMunicipiosGeneralPlataforma_6},
+            {label: 'Base Zonas Metropolitanas CEPREVIDE<br /><table><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_5_301770.png" /></td><td>301.77</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_5_327611.png" /></td><td>327.61</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_5_331922.png" /></td><td>331.92</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_5_349693.png" /></td><td>349.69</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_5_442154.png" /></td><td>442.15</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_5_460665.png" /></td><td>460.66</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_5_516646.png" /></td><td>516.64</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_5_542947.png" /></td><td>542.94</td></tr></table>', layer: layer_BaseZonasMetropolitanasCEPREVIDE_5},
+            {label: 'Base Regiones CEPREVIDE<br /><table><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_739450.png" /></td><td>739.45</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_748531.png" /></td><td>748.53</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_848692.png" /></td><td>848.69</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_858503.png" /></td><td>858.50</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_866654.png" /></td><td>866.65</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_882345.png" /></td><td>882.34</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_901516.png" /></td><td>901.51</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_947417.png" /></td><td>947.41</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_1131168.png" /></td><td>1131.16</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_1524629.png" /></td><td>1524.62</td></tr></table>', layer: layer_BaseRegionesCEPREVIDE_4},
+            {label: 'Base Municipios General CEPREVIDE<br /><table><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralCEPREVIDE_3_1MuyAlta0.png" /></td><td>1.Muy Alta</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralCEPREVIDE_3_2Alta1.png" /></td><td>2.Alta</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralCEPREVIDE_3_3Media2.png" /></td><td>3.Media</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralCEPREVIDE_3_4Baja3.png" /></td><td>4.Baja</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralCEPREVIDE_3_5MuyBaja4.png" /></td><td>5.Muy Baja</td></tr></table>', layer: layer_BaseMunicipiosGeneralCEPREVIDE_3},
+            {label: '<img src="legend/LmiteMunicipalVeracruz_2.png" /> Límite Municipal Veracruz', layer: layer_LmiteMunicipalVeracruz_2},
             {label: '<img src="legend/CoberturalEstatalVeracruz_1.png" /> Cobertural Estatal Veracruz', layer: layer_CoberturalEstatalVeracruz_1},
             {label: "OSM Standard", layer: layer_OSMStandard_0},]
         var lay = L.control.layers.tree(null, overlaysTree,{
@@ -1125,12 +1191,12 @@
         lay.addTo(map);
         setBounds();
         var i = 0;
-        layer_BaseMunicipiosGeneralCEPREVIDE_2.eachLayer(function(layer) {
+        layer_BaseRegionesCEPREVIDE_4.eachLayer(function(layer) {
             var context = {
                 feature: layer.feature,
                 variables: {}
             };
-            layer.bindTooltip((layer.feature.properties['Base Munis'] !== null?String('<div style="color: #323232; font-size: 5pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['Base Munis']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_BaseMunicipiosGeneralCEPREVIDE_2'});
+            layer.bindTooltip((layer.feature.properties['NOM_REG'] !== null?String('<div style="color: #323232; font-size: 7pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['NOM_REG']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_BaseRegionesCEPREVIDE_4'});
             labels.push(layer);
             totalMarkers += 1;
               layer.added = true;
@@ -1138,40 +1204,34 @@
               i++;
         });
         var i = 0;
-        layer_BaseRegionesCEPREVIDE_3.eachLayer(function(layer) {
+        layer_BaseZonasMetropolitanasCEPREVIDE_5.eachLayer(function(layer) {
             var context = {
                 feature: layer.feature,
                 variables: {}
             };
-            layer.bindTooltip((layer.feature.properties['NOM_REG'] !== null?String('<div style="color: #323232; font-size: 7pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['NOM_REG']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_BaseRegionesCEPREVIDE_3'});
+            layer.bindTooltip((layer.feature.properties['NOM_ZM'] !== null?String('<div style="color: #323232; font-size: 7pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['NOM_ZM']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_BaseZonasMetropolitanasCEPREVIDE_5'});
             labels.push(layer);
             totalMarkers += 1;
               layer.added = true;
               addLabel(layer, i);
               i++;
         });
-        var i = 0;
-        layer_BaseMunicipiosGeneralPM_5.eachLayer(function(layer) {
-            var context = {
-                feature: layer.feature,
-                variables: {}
-            };
-            layer.bindTooltip((layer.feature.properties['NOM_MUN'] !== null?String('<div style="color: #323232; font-size: 5pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['NOM_MUN']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_BaseMunicipiosGeneralPM_5'});
-            labels.push(layer);
-            totalMarkers += 1;
-              layer.added = true;
-              addLabel(layer, i);
-              i++;
-        });
-        resetLabels([layer_BaseMunicipiosGeneralCEPREVIDE_2,layer_BaseRegionesCEPREVIDE_3,layer_BaseMunicipiosGeneralPM_5]);
+        map.addControl(new L.Control.Search({
+            layer: cluster_BaseMunicipiosGeneralCEPREVIDE_3,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'NOM_MUN'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        resetLabels([layer_LmiteMunicipalVeracruz_2,layer_BaseMunicipiosGeneralCEPREVIDE_3,layer_BaseRegionesCEPREVIDE_4,layer_BaseZonasMetropolitanasCEPREVIDE_5,layer_BaseMunicipiosGeneralPlataforma_6,layer_BaseCentroMunicipaldePrevencinCEPREVIDE_8]);
         map.on("zoomend", function(){
-            resetLabels([layer_BaseMunicipiosGeneralCEPREVIDE_2,layer_BaseRegionesCEPREVIDE_3,layer_BaseMunicipiosGeneralPM_5]);
+            resetLabels([layer_LmiteMunicipalVeracruz_2,layer_BaseMunicipiosGeneralCEPREVIDE_3,layer_BaseRegionesCEPREVIDE_4,layer_BaseZonasMetropolitanasCEPREVIDE_5,layer_BaseMunicipiosGeneralPlataforma_6,layer_BaseCentroMunicipaldePrevencinCEPREVIDE_8]);
         });
         map.on("layeradd", function(){
-            resetLabels([layer_BaseMunicipiosGeneralCEPREVIDE_2,layer_BaseRegionesCEPREVIDE_3,layer_BaseMunicipiosGeneralPM_5]);
+            resetLabels([layer_LmiteMunicipalVeracruz_2,layer_BaseMunicipiosGeneralCEPREVIDE_3,layer_BaseRegionesCEPREVIDE_4,layer_BaseZonasMetropolitanasCEPREVIDE_5,layer_BaseMunicipiosGeneralPlataforma_6,layer_BaseCentroMunicipaldePrevencinCEPREVIDE_8]);
         });
         map.on("layerremove", function(){
-            resetLabels([layer_BaseMunicipiosGeneralCEPREVIDE_2,layer_BaseRegionesCEPREVIDE_3,layer_BaseMunicipiosGeneralPM_5]);
+            resetLabels([layer_LmiteMunicipalVeracruz_2,layer_BaseMunicipiosGeneralCEPREVIDE_3,layer_BaseRegionesCEPREVIDE_4,layer_BaseZonasMetropolitanasCEPREVIDE_5,layer_BaseMunicipiosGeneralPlataforma_6,layer_BaseCentroMunicipaldePrevencinCEPREVIDE_8]);
         });
         </script>
     </body>
