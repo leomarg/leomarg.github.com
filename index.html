@@ -12,7 +12,6 @@
         <link rel="stylesheet" href="css/fontawesome-all.min.css">
         <link rel="stylesheet" href="css/MarkerCluster.css">
         <link rel="stylesheet" href="css/MarkerCluster.Default.css">
-        <link rel="stylesheet" href="css/leaflet-search.css">
         <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
         <link rel="stylesheet" href="css/leaflet-measure.css">
         <style>
@@ -41,34 +40,19 @@
         <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
         <script src="js/leaflet-measure.js"></script>
         <script src="js/leaflet.markercluster.js"></script>
-        <script src="js/leaflet-search.js"></script>
         <script src="data/CoberturalEstatalVeracruz_1.js"></script>
         <script src="data/LmiteMunicipalVeracruz_2.js"></script>
-        <script src="data/BaseMunicipiosGeneralCEPREVIDE_3.js"></script>
-        <script src="data/BaseRegionesCEPREVIDE_4.js"></script>
-        <script src="data/BaseZonasMetropolitanasCEPREVIDE_5.js"></script>
-        <script src="data/BaseMunicipiosGeneralPlataforma_6.js"></script>
-        <script src="data/BaseAccionesProgramas2023CEPREVIDE_7.js"></script>
-        <script src="data/BaseCentroMunicipaldePrevencinCEPREVIDE_8.js"></script>
+        <script src="data/GradodeIncidenciaDelictiva2024_3.js"></script>
+        <script src="data/IncidenciaDelictivaTasa2024Regiones_4.js"></script>
+        <script src="data/IncidenciaDelectivaTasa2024ZMetropolitanas_5.js"></script>
+        <script src="data/GradodeMarginacinPM_6.js"></script>
+        <script src="data/AccionesdePrevencin2019CEPREVIDE_7.js"></script>
+        <script src="data/AccionesdePrevencin2023CEPREVIDE_8.js"></script>
+        <script src="data/CentroMunicipaldePrevencinCEPREVIDE_9.js"></script>
         <script>
-        var highlightLayer;
-        function highlightFeature(e) {
-            highlightLayer = e.target;
-
-            if (e.target.feature.geometry.type === 'LineString' || e.target.feature.geometry.type === 'MultiLineString') {
-              highlightLayer.setStyle({
-                color: '#ffff00',
-              });
-            } else {
-              highlightLayer.setStyle({
-                fillColor: '#ffff00',
-                fillOpacity: 1
-              });
-            }
-        }
         var map = L.map('map', {
             zoomControl:false, maxZoom:28, minZoom:1
-        }).fitBounds([[17.05779412718328,-100.79631170996282],[22.65879450412064,-90.29364130962182]]);
+        }).fitBounds([[17.25113455222548,-100.57520884824973],[22.31165165709227,-91.62596293521617]]);
         var hash = new L.Hash(map);
         map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
@@ -130,16 +114,6 @@
         layer_OSMStandard_0;
         map.addLayer(layer_OSMStandard_0);
         function pop_CoberturalEstatalVeracruz_1(feature, layer) {
-            layer.on({
-                mouseout: function(e) {
-                    for (var i in e.target._eventParents) {
-                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
-                            e.target._eventParents[i].resetStyle(e.target);
-                        }
-                    }
-                },
-                mouseover: highlightFeature,
-            });
             var popupContent = '<table>\
                 </table>';
             var content = removeEmptyRowsFromPopupContent(popupContent, feature);
@@ -179,16 +153,6 @@
         bounds_group.addLayer(layer_CoberturalEstatalVeracruz_1);
         map.addLayer(layer_CoberturalEstatalVeracruz_1);
         function pop_LmiteMunicipalVeracruz_2(feature, layer) {
-            layer.on({
-                mouseout: function(e) {
-                    for (var i in e.target._eventParents) {
-                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
-                            e.target._eventParents[i].resetStyle(e.target);
-                        }
-                    }
-                },
-                mouseover: highlightFeature,
-            });
             var popupContent = '<table>\
                 </table>';
             var content = removeEmptyRowsFromPopupContent(popupContent, feature);
@@ -203,10 +167,10 @@
                 pane: 'pane_LmiteMunicipalVeracruz_2',
                 opacity: 1,
                 color: 'rgba(108,108,108,1.0)',
-                dashArray: '5.0,1.0,2.0,1.0',
+                dashArray: '10.0,2.0,4.0,2.0',
                 lineCap: 'butt',
                 lineJoin: 'miter',
-                weight: 1, 
+                weight: 2.0, 
                 fill: true,
                 fillOpacity: 1,
                 fillColor: 'rgba(232,113,141,0.0)',
@@ -227,17 +191,7 @@
         });
         bounds_group.addLayer(layer_LmiteMunicipalVeracruz_2);
         map.addLayer(layer_LmiteMunicipalVeracruz_2);
-        function pop_BaseMunicipiosGeneralCEPREVIDE_3(feature, layer) {
-            layer.on({
-                mouseout: function(e) {
-                    for (var i in e.target._eventParents) {
-                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
-                            e.target._eventParents[i].resetStyle(e.target);
-                        }
-                    }
-                },
-                mouseover: highlightFeature,
-            });
+        function pop_GradodeIncidenciaDelictiva2024_3(feature, layer) {
             var popupContent = '<table>\
                     <tr>\
                         <td colspan="2"><strong>MUNICIPIO</strong><br />' + (feature.properties['Base Munis'] !== null ? autolinker.link(feature.properties['Base Munis'].toLocaleString()) : '') + '</td>\
@@ -306,11 +260,11 @@
 			layer.bindPopup(content, { maxHeight: 400 });
         }
 
-        function style_BaseMunicipiosGeneralCEPREVIDE_3_0(feature) {
+        function style_GradodeIncidenciaDelictiva2024_3_0(feature) {
             switch(String(feature.properties['GRA_INC24'])) {
                 case '1.Muy Alta':
                     return {
-                pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_3',
+                pane: 'pane_GradodeIncidenciaDelictiva2024_3',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -325,7 +279,7 @@
                     break;
                 case '2.Alta':
                     return {
-                pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_3',
+                pane: 'pane_GradodeIncidenciaDelictiva2024_3',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -340,7 +294,7 @@
                     break;
                 case '3.Media':
                     return {
-                pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_3',
+                pane: 'pane_GradodeIncidenciaDelictiva2024_3',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -355,7 +309,7 @@
                     break;
                 case '4.Baja':
                     return {
-                pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_3',
+                pane: 'pane_GradodeIncidenciaDelictiva2024_3',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -370,7 +324,7 @@
                     break;
                 case '5.Muy Baja':
                     return {
-                pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_3',
+                pane: 'pane_GradodeIncidenciaDelictiva2024_3',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -385,52 +339,42 @@
                     break;
             }
         }
-        map.createPane('pane_BaseMunicipiosGeneralCEPREVIDE_3');
-        map.getPane('pane_BaseMunicipiosGeneralCEPREVIDE_3').style.zIndex = 403;
-        map.getPane('pane_BaseMunicipiosGeneralCEPREVIDE_3').style['mix-blend-mode'] = 'normal';
-        var layer_BaseMunicipiosGeneralCEPREVIDE_3 = new L.geoJson(json_BaseMunicipiosGeneralCEPREVIDE_3, {
+        map.createPane('pane_GradodeIncidenciaDelictiva2024_3');
+        map.getPane('pane_GradodeIncidenciaDelictiva2024_3').style.zIndex = 403;
+        map.getPane('pane_GradodeIncidenciaDelictiva2024_3').style['mix-blend-mode'] = 'normal';
+        var layer_GradodeIncidenciaDelictiva2024_3 = new L.geoJson(json_GradodeIncidenciaDelictiva2024_3, {
             attribution: '',
             interactive: true,
-            dataVar: 'json_BaseMunicipiosGeneralCEPREVIDE_3',
-            layerName: 'layer_BaseMunicipiosGeneralCEPREVIDE_3',
-            pane: 'pane_BaseMunicipiosGeneralCEPREVIDE_3',
-            onEachFeature: pop_BaseMunicipiosGeneralCEPREVIDE_3,
-            style: style_BaseMunicipiosGeneralCEPREVIDE_3_0,
+            dataVar: 'json_GradodeIncidenciaDelictiva2024_3',
+            layerName: 'layer_GradodeIncidenciaDelictiva2024_3',
+            pane: 'pane_GradodeIncidenciaDelictiva2024_3',
+            onEachFeature: pop_GradodeIncidenciaDelictiva2024_3,
+            style: style_GradodeIncidenciaDelictiva2024_3_0,
         });
-        bounds_group.addLayer(layer_BaseMunicipiosGeneralCEPREVIDE_3);
-        function pop_BaseRegionesCEPREVIDE_4(feature, layer) {
-            layer.on({
-                mouseout: function(e) {
-                    for (var i in e.target._eventParents) {
-                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
-                            e.target._eventParents[i].resetStyle(e.target);
-                        }
-                    }
-                },
-                mouseover: highlightFeature,
-            });
+        bounds_group.addLayer(layer_GradodeIncidenciaDelictiva2024_3);
+        function pop_IncidenciaDelictivaTasa2024Regiones_4(feature, layer) {
             var popupContent = '<table>\
                     <tr>\
-                        <td class="visible-with-data" id="NOMBRE"colspan="2"><strong>MUNICIPIO</strong><br />' + (feature.properties['NOMBRE'] !== null ? autolinker.link(feature.properties['NOMBRE'].toLocaleString()) : '') + '</td>\
+                        <td class="visible-with-data" id="NOMBRE"colspan="2"><strong>REGIÓN</strong><br />' + (feature.properties['NOMBRE'] !== null ? autolinker.link(feature.properties['NOMBRE'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">POBLACION TOTAL (PROY23) CONAPO</th>\
                         <td>' + (feature.properties['POB_TOT_CO'] !== null ? autolinker.link(feature.properties['POB_TOT_CO'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">INCIDENCIA DELICTIVA (ABSOLUTOS)23</th>\
+                        <th scope="row">INCIDENCIA DELICTIVA 2023</th>\
                         <td>' + (feature.properties['IN_DEL_23A'] !== null ? autolinker.link(feature.properties['IN_DEL_23A'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">VIOLENCIA FAMILIAR (ABSOLUTOS)23</th>\
+                        <th scope="row">VIOLENCIA FAMILIAR 2023</th>\
                         <td>' + (feature.properties['VIO_FAM_23'] !== null ? autolinker.link(feature.properties['VIO_FAM_23'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">NARCOMENUDEO (ABSOLUTOS) 23</th>\
+                        <th scope="row">NARCOMENUDEO 2023</th>\
                         <td>' + (feature.properties['NAR_23ABS'] !== null ? autolinker.link(feature.properties['NAR_23ABS'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">VIOLENCIA DE GÉNERO (ABSOLUTOS) 23</th>\
+                        <th scope="row">VIOLENCIA DE GÉNERO 2023</th>\
                         <td>' + (feature.properties['VIO_GEN_23'] !== null ? autolinker.link(feature.properties['VIO_GEN_23'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
@@ -438,19 +382,19 @@
                         <td>' + (feature.properties['POB_TOT__1'] !== null ? autolinker.link(feature.properties['POB_TOT__1'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">INCIDENCIA DELICTIVA (ABSOLUTOS) 24</th>\
+                        <th scope="row">INCIDENCIA DELICTIVA 24</th>\
                         <td>' + (feature.properties['INC_DEL_24'] !== null ? autolinker.link(feature.properties['INC_DEL_24'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">VIOLENCIA FAMILIAR (ABSOLUTOS) 24</th>\
+                        <th scope="row">VIOLENCIA FAMILIAR 2024</th>\
                         <td>' + (feature.properties['VIO_FAM_24'] !== null ? autolinker.link(feature.properties['VIO_FAM_24'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">NARCOMENUDEO (ABSOLUTOS) 24</th>\
+                        <th scope="row">NARCOMENUDEO 2024</th>\
                         <td>' + (feature.properties['NAR_24ABS'] !== null ? autolinker.link(feature.properties['NAR_24ABS'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">VIOLENCIA DE GÉNERO (ABSOLUTOS) 24</th>\
+                        <th scope="row">VIOLENCIA DE GÉNERO 2024</th>\
                         <td>' + (feature.properties['VIO_GEN_24'] !== null ? autolinker.link(feature.properties['VIO_GEN_24'].toLocaleString()) : '') + '</td>\
                     </tr>\
                 </table>';
@@ -461,11 +405,11 @@
 			layer.bindPopup(content, { maxHeight: 400 });
         }
 
-        function style_BaseRegionesCEPREVIDE_4_0(feature) {
+        function style_IncidenciaDelictivaTasa2024Regiones_4_0(feature) {
             switch(String(feature.properties['INC_DEL_23'])) {
                 case '739.45':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_4',
+                pane: 'pane_IncidenciaDelictivaTasa2024Regiones_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -480,7 +424,7 @@
                     break;
                 case '748.53':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_4',
+                pane: 'pane_IncidenciaDelictivaTasa2024Regiones_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -495,7 +439,7 @@
                     break;
                 case '848.69':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_4',
+                pane: 'pane_IncidenciaDelictivaTasa2024Regiones_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -510,7 +454,7 @@
                     break;
                 case '858.5':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_4',
+                pane: 'pane_IncidenciaDelictivaTasa2024Regiones_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -525,7 +469,7 @@
                     break;
                 case '866.65':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_4',
+                pane: 'pane_IncidenciaDelictivaTasa2024Regiones_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -540,7 +484,7 @@
                     break;
                 case '882.34':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_4',
+                pane: 'pane_IncidenciaDelictivaTasa2024Regiones_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -555,7 +499,7 @@
                     break;
                 case '901.51':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_4',
+                pane: 'pane_IncidenciaDelictivaTasa2024Regiones_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -570,7 +514,7 @@
                     break;
                 case '947.41':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_4',
+                pane: 'pane_IncidenciaDelictivaTasa2024Regiones_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -585,7 +529,7 @@
                     break;
                 case '1131.16':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_4',
+                pane: 'pane_IncidenciaDelictivaTasa2024Regiones_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -600,7 +544,7 @@
                     break;
                 case '1524.62':
                     return {
-                pane: 'pane_BaseRegionesCEPREVIDE_4',
+                pane: 'pane_IncidenciaDelictivaTasa2024Regiones_4',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -615,52 +559,42 @@
                     break;
             }
         }
-        map.createPane('pane_BaseRegionesCEPREVIDE_4');
-        map.getPane('pane_BaseRegionesCEPREVIDE_4').style.zIndex = 404;
-        map.getPane('pane_BaseRegionesCEPREVIDE_4').style['mix-blend-mode'] = 'normal';
-        var layer_BaseRegionesCEPREVIDE_4 = new L.geoJson(json_BaseRegionesCEPREVIDE_4, {
+        map.createPane('pane_IncidenciaDelictivaTasa2024Regiones_4');
+        map.getPane('pane_IncidenciaDelictivaTasa2024Regiones_4').style.zIndex = 404;
+        map.getPane('pane_IncidenciaDelictivaTasa2024Regiones_4').style['mix-blend-mode'] = 'normal';
+        var layer_IncidenciaDelictivaTasa2024Regiones_4 = new L.geoJson(json_IncidenciaDelictivaTasa2024Regiones_4, {
             attribution: '',
             interactive: true,
-            dataVar: 'json_BaseRegionesCEPREVIDE_4',
-            layerName: 'layer_BaseRegionesCEPREVIDE_4',
-            pane: 'pane_BaseRegionesCEPREVIDE_4',
-            onEachFeature: pop_BaseRegionesCEPREVIDE_4,
-            style: style_BaseRegionesCEPREVIDE_4_0,
+            dataVar: 'json_IncidenciaDelictivaTasa2024Regiones_4',
+            layerName: 'layer_IncidenciaDelictivaTasa2024Regiones_4',
+            pane: 'pane_IncidenciaDelictivaTasa2024Regiones_4',
+            onEachFeature: pop_IncidenciaDelictivaTasa2024Regiones_4,
+            style: style_IncidenciaDelictivaTasa2024Regiones_4_0,
         });
-        bounds_group.addLayer(layer_BaseRegionesCEPREVIDE_4);
-        function pop_BaseZonasMetropolitanasCEPREVIDE_5(feature, layer) {
-            layer.on({
-                mouseout: function(e) {
-                    for (var i in e.target._eventParents) {
-                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
-                            e.target._eventParents[i].resetStyle(e.target);
-                        }
-                    }
-                },
-                mouseover: highlightFeature,
-            });
+        bounds_group.addLayer(layer_IncidenciaDelictivaTasa2024Regiones_4);
+        function pop_IncidenciaDelectivaTasa2024ZMetropolitanas_5(feature, layer) {
             var popupContent = '<table>\
                     <tr>\
-                        <td colspan="2"><strong>NOM_ZM</strong><br />' + (feature.properties['NOM_ZM'] !== null ? autolinker.link(feature.properties['NOM_ZM'].toLocaleString()) : '') + '</td>\
+                        <td colspan="2"><strong>ZONA METROPOLITANA</strong><br />' + (feature.properties['NOM_ZM'] !== null ? autolinker.link(feature.properties['NOM_ZM'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">POBLACION TOTAL (PROY23) CONAPO</th>\
                         <td>' + (feature.properties['POB_TOT_CO'] !== null ? autolinker.link(feature.properties['POB_TOT_CO'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">INCIDENCIA DELICTIVA (ABSOLUTOS)23</th>\
+                        <th scope="row">INCIDENCIA DELICTIVA 2023</th>\
                         <td>' + (feature.properties['IN_DEL_23A'] !== null ? autolinker.link(feature.properties['IN_DEL_23A'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">VIOLENCIA FAMILIAR (ABSOLUTOS)23</th>\
+                        <th scope="row">VIOLENCIA FAMILIAR 2023</th>\
                         <td>' + (feature.properties['VIO_FAM_23'] !== null ? autolinker.link(feature.properties['VIO_FAM_23'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">NARCOMENUDEO (ABSOLUTOS) 23</th>\
+                        <th scope="row">NARCOMENUDEO 2023</th>\
                         <td>' + (feature.properties['NAR_23ABS'] !== null ? autolinker.link(feature.properties['NAR_23ABS'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">VIOLENCIA DE GÉNERO (ABSOLUTOS) 23</th>\
+                        <th scope="row">VIOLENCIA DE GÉNERO 2023</th>\
                         <td>' + (feature.properties['VIO_GEN_23'] !== null ? autolinker.link(feature.properties['VIO_GEN_23'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
@@ -668,19 +602,19 @@
                         <td>' + (feature.properties['POB_TOT_CO_1'] !== null ? autolinker.link(feature.properties['POB_TOT_CO_1'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">INCIDENCIA DELICTIVA (ABSOLUTOS) 24</th>\
+                        <th scope="row">INCIDENCIA DELICTIVA 2024</th>\
                         <td>' + (feature.properties['INC_DEL_24'] !== null ? autolinker.link(feature.properties['INC_DEL_24'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">VIOLENCIA FAMILIAR (ABSOLUTOS) 24</th>\
+                        <th scope="row">VIOLENCIA FAMILIAR 2024</th>\
                         <td>' + (feature.properties['VIO_FAM_24'] !== null ? autolinker.link(feature.properties['VIO_FAM_24'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">NARCOMENUDEO (ABSOLUTOS) 24</th>\
+                        <th scope="row">NARCOMENUDEO 2024</th>\
                         <td>' + (feature.properties['NAR_24ABS'] !== null ? autolinker.link(feature.properties['NAR_24ABS'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">VIOLENCIA DE GÉNERO (ABSOLUTOS) 24</th>\
+                        <th scope="row">VIOLENCIA DE GÉNERO 2024</th>\
                         <td>' + (feature.properties['VIO_GEN_24'] !== null ? autolinker.link(feature.properties['VIO_GEN_24'].toLocaleString()) : '') + '</td>\
                     </tr>\
                 </table>';
@@ -691,11 +625,11 @@
 			layer.bindPopup(content, { maxHeight: 400 });
         }
 
-        function style_BaseZonasMetropolitanasCEPREVIDE_5_0(feature) {
+        function style_IncidenciaDelectivaTasa2024ZMetropolitanas_5_0(feature) {
             switch(String(feature.properties['VIO_GEN_24_1'])) {
                 case '301.78':
                     return {
-                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
+                pane: 'pane_IncidenciaDelectivaTasa2024ZMetropolitanas_5',
                 opacity: 1,
                 color: 'rgba(108,108,108,1.0)',
                 dashArray: '',
@@ -710,7 +644,7 @@
                     break;
                 case '327.61':
                     return {
-                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
+                pane: 'pane_IncidenciaDelectivaTasa2024ZMetropolitanas_5',
                 opacity: 1,
                 color: 'rgba(108,108,108,1.0)',
                 dashArray: '',
@@ -725,7 +659,7 @@
                     break;
                 case '331.92':
                     return {
-                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
+                pane: 'pane_IncidenciaDelectivaTasa2024ZMetropolitanas_5',
                 opacity: 1,
                 color: 'rgba(108,108,108,1.0)',
                 dashArray: '',
@@ -740,7 +674,7 @@
                     break;
                 case '349.7':
                     return {
-                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
+                pane: 'pane_IncidenciaDelectivaTasa2024ZMetropolitanas_5',
                 opacity: 1,
                 color: 'rgba(108,108,108,1.0)',
                 dashArray: '',
@@ -755,7 +689,7 @@
                     break;
                 case '442.15':
                     return {
-                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
+                pane: 'pane_IncidenciaDelectivaTasa2024ZMetropolitanas_5',
                 opacity: 1,
                 color: 'rgba(108,108,108,1.0)',
                 dashArray: '',
@@ -770,7 +704,7 @@
                     break;
                 case '460.66':
                     return {
-                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
+                pane: 'pane_IncidenciaDelectivaTasa2024ZMetropolitanas_5',
                 opacity: 1,
                 color: 'rgba(108,108,108,1.0)',
                 dashArray: '',
@@ -785,7 +719,7 @@
                     break;
                 case '516.64':
                     return {
-                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
+                pane: 'pane_IncidenciaDelectivaTasa2024ZMetropolitanas_5',
                 opacity: 1,
                 color: 'rgba(108,108,108,1.0)',
                 dashArray: '',
@@ -800,7 +734,7 @@
                     break;
                 case '542.94':
                     return {
-                pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
+                pane: 'pane_IncidenciaDelectivaTasa2024ZMetropolitanas_5',
                 opacity: 1,
                 color: 'rgba(108,108,108,1.0)',
                 dashArray: '',
@@ -815,30 +749,20 @@
                     break;
             }
         }
-        map.createPane('pane_BaseZonasMetropolitanasCEPREVIDE_5');
-        map.getPane('pane_BaseZonasMetropolitanasCEPREVIDE_5').style.zIndex = 405;
-        map.getPane('pane_BaseZonasMetropolitanasCEPREVIDE_5').style['mix-blend-mode'] = 'normal';
-        var layer_BaseZonasMetropolitanasCEPREVIDE_5 = new L.geoJson(json_BaseZonasMetropolitanasCEPREVIDE_5, {
+        map.createPane('pane_IncidenciaDelectivaTasa2024ZMetropolitanas_5');
+        map.getPane('pane_IncidenciaDelectivaTasa2024ZMetropolitanas_5').style.zIndex = 405;
+        map.getPane('pane_IncidenciaDelectivaTasa2024ZMetropolitanas_5').style['mix-blend-mode'] = 'normal';
+        var layer_IncidenciaDelectivaTasa2024ZMetropolitanas_5 = new L.geoJson(json_IncidenciaDelectivaTasa2024ZMetropolitanas_5, {
             attribution: '',
             interactive: true,
-            dataVar: 'json_BaseZonasMetropolitanasCEPREVIDE_5',
-            layerName: 'layer_BaseZonasMetropolitanasCEPREVIDE_5',
-            pane: 'pane_BaseZonasMetropolitanasCEPREVIDE_5',
-            onEachFeature: pop_BaseZonasMetropolitanasCEPREVIDE_5,
-            style: style_BaseZonasMetropolitanasCEPREVIDE_5_0,
+            dataVar: 'json_IncidenciaDelectivaTasa2024ZMetropolitanas_5',
+            layerName: 'layer_IncidenciaDelectivaTasa2024ZMetropolitanas_5',
+            pane: 'pane_IncidenciaDelectivaTasa2024ZMetropolitanas_5',
+            onEachFeature: pop_IncidenciaDelectivaTasa2024ZMetropolitanas_5,
+            style: style_IncidenciaDelectivaTasa2024ZMetropolitanas_5_0,
         });
-        bounds_group.addLayer(layer_BaseZonasMetropolitanasCEPREVIDE_5);
-        function pop_BaseMunicipiosGeneralPlataforma_6(feature, layer) {
-            layer.on({
-                mouseout: function(e) {
-                    for (var i in e.target._eventParents) {
-                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
-                            e.target._eventParents[i].resetStyle(e.target);
-                        }
-                    }
-                },
-                mouseover: highlightFeature,
-            });
+        bounds_group.addLayer(layer_IncidenciaDelectivaTasa2024ZMetropolitanas_5);
+        function pop_GradodeMarginacinPM_6(feature, layer) {
             var popupContent = '<table>\
                     <tr>\
                         <td class="visible-with-data" id="MUNICIPIO"colspan="2"><strong>MUNICIPIO</strong><br />' + (feature.properties['MUNICIPIO'] !== null ? autolinker.link(feature.properties['MUNICIPIO'].toLocaleString()) : '') + '</td>\
@@ -856,7 +780,7 @@
                         <td>' + (feature.properties['POB_CON24'] !== null ? autolinker.link(feature.properties['POB_CON24'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">ESTADO DE FUERZA (IDEAL ONU)</th>\
+                        <th scope="row">ESTADO FUERZA (IDEAL ONU)</th>\
                         <td>' + (feature.properties['IDE_ELE'] !== null ? autolinker.link(feature.properties['IDE_ELE'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
@@ -864,8 +788,16 @@
                         <td>' + (feature.properties['COMP_PM'] !== null ? autolinker.link(feature.properties['COMP_PM'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
+                        <th scope="row">BENEFICIADO FASP</th>\
+                        <td>' + (feature.properties['FASP_BEN'] !== null ? autolinker.link(feature.properties['FASP_BEN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
                         <th scope="row">COMPROMISO SUMINISTRO</th>\
                         <td>' + (feature.properties['COMP_SM'] !== null ? autolinker.link(feature.properties['COMP_SM'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">BENEFICIADO FOFISP 2023</th>\
+                        <td>' + (feature.properties['FOFISP_23'] !== null ? autolinker.link(feature.properties['FOFISP_23'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">EQUIPAMIENTO FASP 2022</th>\
@@ -873,31 +805,31 @@
                     </tr>\
                     <tr>\
                         <th scope="row">EQUIPAMIENTO FASP 2023</th>\
-                        <td class="visible-with-data" id="EQU_2023">' + (feature.properties['EQU_2023'] !== null ? autolinker.link(feature.properties['EQU_2023'].toLocaleString()) : '') + '</td>\
+                        <td>' + (feature.properties['EQU_2023'] !== null ? autolinker.link(feature.properties['EQU_2023'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">SITUACION JUNIO 2024</th>\
                         <td>' + (feature.properties['SIT_JUN24'] !== null ? autolinker.link(feature.properties['SIT_JUN24'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">FECHA DE CONEXIÓN</th>\
-                        <td>' + (feature.properties['FEC_CON'] !== null ? autolinker.link(feature.properties['FEC_CON'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
                         <th scope="row">ELE. ACTIVOS (RNPSP-MAR24)</th>\
                         <td>' + (feature.properties['RNPSP_MAR2'] !== null ? autolinker.link(feature.properties['RNPSP_MAR2'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">USUARIOS RND</th>\
-                        <td>' + (feature.properties['USU_RND'] !== null ? autolinker.link(feature.properties['USU_RND'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">USUARIOS IPH</th>\
-                        <td>' + (feature.properties['USU_IPH'] !== null ? autolinker.link(feature.properties['USU_IPH'].toLocaleString()) : '') + '</td>\
+                        <th scope="row">SUMINISTRA RND</th>\
+                        <td>' + (feature.properties['SUM_RND'] !== null ? autolinker.link(feature.properties['SUM_RND'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">SUMINISTRA IPH</th>\
                         <td>' + (feature.properties['SUM_IPH'] !== null ? autolinker.link(feature.properties['SUM_IPH'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">A TRAVES DE</th>\
+                        <td>' + (feature.properties['A_TRAV_DE'] !== null ? autolinker.link(feature.properties['A_TRAV_DE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">REZAGO SOCIAL</th>\
+                        <td>' + (feature.properties['REZ_SOC'] !== null ? autolinker.link(feature.properties['REZ_SOC'].toLocaleString()) : '') + '</td>\
                     </tr>\
                 </table>';
             var content = removeEmptyRowsFromPopupContent(popupContent, feature);
@@ -907,70 +839,11 @@
 			layer.bindPopup(content, { maxHeight: 400 });
         }
 
-        function style_BaseMunicipiosGeneralPlataforma_6_0(feature) {
-            if (feature.properties['POB_CON24'] >= 1561.000000 && feature.properties['POB_CON24'] <= 9734.800000 ) {
-                return {
-                pane: 'pane_BaseMunicipiosGeneralPlataforma_6',
-                opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1.0, 
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(255,245,235,1.0)',
-                interactive: true,
-            }
-            }
-            if (feature.properties['POB_CON24'] >= 9734.800000 && feature.properties['POB_CON24'] <= 16480.000000 ) {
-                return {
-                pane: 'pane_BaseMunicipiosGeneralPlataforma_6',
-                opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1.0, 
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(253,210,165,1.0)',
-                interactive: true,
-            }
-            }
-            if (feature.properties['POB_CON24'] >= 16480.000000 && feature.properties['POB_CON24'] <= 24964.000000 ) {
-                return {
-                pane: 'pane_BaseMunicipiosGeneralPlataforma_6',
-                opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1.0, 
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(253,146,67,1.0)',
-                interactive: true,
-            }
-            }
-            if (feature.properties['POB_CON24'] >= 24964.000000 && feature.properties['POB_CON24'] <= 47396.000000 ) {
-                return {
-                pane: 'pane_BaseMunicipiosGeneralPlataforma_6',
-                opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1.0, 
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(223,80,5,1.0)',
-                interactive: true,
-            }
-            }
-            if (feature.properties['POB_CON24'] >= 47396.000000 && feature.properties['POB_CON24'] <= 623561.000000 ) {
-                return {
-                pane: 'pane_BaseMunicipiosGeneralPlataforma_6',
+        function style_GradodeMarginacinPM_6_0(feature) {
+            switch(String(feature.properties['GDO_MARG'])) {
+                case 'MUY ALTO':
+                    return {
+                pane: 'pane_GradodeMarginacinPM_6',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -982,32 +855,157 @@
                 fillColor: 'rgba(127,39,4,1.0)',
                 interactive: true,
             }
+                    break;
+                case 'ALTO':
+                    return {
+                pane: 'pane_GradodeMarginacinPM_6',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(223,80,5,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'MEDIO':
+                    return {
+                pane: 'pane_GradodeMarginacinPM_6',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(253,146,67,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'BAJO':
+                    return {
+                pane: 'pane_GradodeMarginacinPM_6',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(253,210,165,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'MUY BAJO':
+                    return {
+                pane: 'pane_GradodeMarginacinPM_6',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,245,235,1.0)',
+                interactive: true,
+            }
+                    break;
             }
         }
-        map.createPane('pane_BaseMunicipiosGeneralPlataforma_6');
-        map.getPane('pane_BaseMunicipiosGeneralPlataforma_6').style.zIndex = 406;
-        map.getPane('pane_BaseMunicipiosGeneralPlataforma_6').style['mix-blend-mode'] = 'normal';
-        var layer_BaseMunicipiosGeneralPlataforma_6 = new L.geoJson(json_BaseMunicipiosGeneralPlataforma_6, {
+        map.createPane('pane_GradodeMarginacinPM_6');
+        map.getPane('pane_GradodeMarginacinPM_6').style.zIndex = 406;
+        map.getPane('pane_GradodeMarginacinPM_6').style['mix-blend-mode'] = 'normal';
+        var layer_GradodeMarginacinPM_6 = new L.geoJson(json_GradodeMarginacinPM_6, {
             attribution: '',
             interactive: true,
-            dataVar: 'json_BaseMunicipiosGeneralPlataforma_6',
-            layerName: 'layer_BaseMunicipiosGeneralPlataforma_6',
-            pane: 'pane_BaseMunicipiosGeneralPlataforma_6',
-            onEachFeature: pop_BaseMunicipiosGeneralPlataforma_6,
-            style: style_BaseMunicipiosGeneralPlataforma_6_0,
+            dataVar: 'json_GradodeMarginacinPM_6',
+            layerName: 'layer_GradodeMarginacinPM_6',
+            pane: 'pane_GradodeMarginacinPM_6',
+            onEachFeature: pop_GradodeMarginacinPM_6,
+            style: style_GradodeMarginacinPM_6_0,
         });
-        bounds_group.addLayer(layer_BaseMunicipiosGeneralPlataforma_6);
-        function pop_BaseAccionesProgramas2023CEPREVIDE_7(feature, layer) {
-            layer.on({
-                mouseout: function(e) {
-                    for (var i in e.target._eventParents) {
-                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
-                            e.target._eventParents[i].resetStyle(e.target);
-                        }
-                    }
-                },
-                mouseover: highlightFeature,
-            });
+        bounds_group.addLayer(layer_GradodeMarginacinPM_6);
+        function pop_AccionesdePrevencin2019CEPREVIDE_7(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Municipio</th>\
+                        <td>' + (feature.properties['Municipio'] !== null ? autolinker.link(feature.properties['Municipio'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Programa</th>\
+                        <td>' + (feature.properties['Programa'] !== null ? autolinker.link(feature.properties['Programa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Actividad</th>\
+                        <td>' + (feature.properties['Actividad'] !== null ? autolinker.link(feature.properties['Actividad'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tema</th>\
+                        <td>' + (feature.properties['Tema'] !== null ? autolinker.link(feature.properties['Tema'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Total_pers</th>\
+                        <td>' + (feature.properties['Total_pers'] !== null ? autolinker.link(feature.properties['Total_pers'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Total_H</th>\
+                        <td>' + (feature.properties['Total_H'] !== null ? autolinker.link(feature.properties['Total_H'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Total_M</th>\
+                        <td>' + (feature.properties['Total_M'] !== null ? autolinker.link(feature.properties['Total_M'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_AccionesdePrevencin2019CEPREVIDE_7_0() {
+            return {
+                pane: 'pane_AccionesdePrevencin2019CEPREVIDE_7',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/AccionesdePrevencin2019CEPREVIDE_7.svg',
+            iconSize: [30.400000000000006, 30.400000000000006]
+        }),
+                interactive: true,
+            }
+        }
+        map.createPane('pane_AccionesdePrevencin2019CEPREVIDE_7');
+        map.getPane('pane_AccionesdePrevencin2019CEPREVIDE_7').style.zIndex = 407;
+        map.getPane('pane_AccionesdePrevencin2019CEPREVIDE_7').style['mix-blend-mode'] = 'normal';
+        var layer_AccionesdePrevencin2019CEPREVIDE_7 = new L.geoJson(json_AccionesdePrevencin2019CEPREVIDE_7, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_AccionesdePrevencin2019CEPREVIDE_7',
+            layerName: 'layer_AccionesdePrevencin2019CEPREVIDE_7',
+            pane: 'pane_AccionesdePrevencin2019CEPREVIDE_7',
+            onEachFeature: pop_AccionesdePrevencin2019CEPREVIDE_7,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.marker(latlng, style_AccionesdePrevencin2019CEPREVIDE_7_0(feature));
+            },
+        });
+        var cluster_AccionesdePrevencin2019CEPREVIDE_7 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_AccionesdePrevencin2019CEPREVIDE_7.addLayer(layer_AccionesdePrevencin2019CEPREVIDE_7);
+
+        bounds_group.addLayer(layer_AccionesdePrevencin2019CEPREVIDE_7);
+        cluster_AccionesdePrevencin2019CEPREVIDE_7.addTo(map);
+        function pop_AccionesdePrevencin2023CEPREVIDE_8(feature, layer) {
             var popupContent = '<table>\
                     <tr>\
                         <th scope="row">Programa</th>\
@@ -1041,59 +1039,55 @@
 			layer.bindPopup(content, { maxHeight: 400 });
         }
 
-        function style_BaseAccionesProgramas2023CEPREVIDE_7_0() {
+        function style_AccionesdePrevencin2023CEPREVIDE_8_0() {
             return {
-                pane: 'pane_BaseAccionesProgramas2023CEPREVIDE_7',
-                radius: 5.599999999999998,
-                opacity: 1,
-                color: 'rgba(50,87,128,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 2.0,
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(72,123,182,1.0)',
+                pane: 'pane_AccionesdePrevencin2023CEPREVIDE_8',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/AccionesdePrevencin2023CEPREVIDE_8.svg',
+            iconSize: [30.400000000000006, 30.400000000000006]
+        }),
                 interactive: true,
             }
         }
-        map.createPane('pane_BaseAccionesProgramas2023CEPREVIDE_7');
-        map.getPane('pane_BaseAccionesProgramas2023CEPREVIDE_7').style.zIndex = 407;
-        map.getPane('pane_BaseAccionesProgramas2023CEPREVIDE_7').style['mix-blend-mode'] = 'normal';
-        var layer_BaseAccionesProgramas2023CEPREVIDE_7 = new L.geoJson(json_BaseAccionesProgramas2023CEPREVIDE_7, {
+        map.createPane('pane_AccionesdePrevencin2023CEPREVIDE_8');
+        map.getPane('pane_AccionesdePrevencin2023CEPREVIDE_8').style.zIndex = 408;
+        map.getPane('pane_AccionesdePrevencin2023CEPREVIDE_8').style['mix-blend-mode'] = 'normal';
+        var layer_AccionesdePrevencin2023CEPREVIDE_8 = new L.geoJson(json_AccionesdePrevencin2023CEPREVIDE_8, {
             attribution: '',
             interactive: true,
-            dataVar: 'json_BaseAccionesProgramas2023CEPREVIDE_7',
-            layerName: 'layer_BaseAccionesProgramas2023CEPREVIDE_7',
-            pane: 'pane_BaseAccionesProgramas2023CEPREVIDE_7',
-            onEachFeature: pop_BaseAccionesProgramas2023CEPREVIDE_7,
+            dataVar: 'json_AccionesdePrevencin2023CEPREVIDE_8',
+            layerName: 'layer_AccionesdePrevencin2023CEPREVIDE_8',
+            pane: 'pane_AccionesdePrevencin2023CEPREVIDE_8',
+            onEachFeature: pop_AccionesdePrevencin2023CEPREVIDE_8,
             pointToLayer: function (feature, latlng) {
                 var context = {
                     feature: feature,
                     variables: {}
                 };
-                return L.circleMarker(latlng, style_BaseAccionesProgramas2023CEPREVIDE_7_0(feature));
+                return L.marker(latlng, style_AccionesdePrevencin2023CEPREVIDE_8_0(feature));
             },
         });
-        var cluster_BaseAccionesProgramas2023CEPREVIDE_7 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+        var cluster_AccionesdePrevencin2023CEPREVIDE_8 = new L.MarkerClusterGroup({showCoverageOnHover: false,
             spiderfyDistanceMultiplier: 2});
-        cluster_BaseAccionesProgramas2023CEPREVIDE_7.addLayer(layer_BaseAccionesProgramas2023CEPREVIDE_7);
+        cluster_AccionesdePrevencin2023CEPREVIDE_8.addLayer(layer_AccionesdePrevencin2023CEPREVIDE_8);
 
-        bounds_group.addLayer(layer_BaseAccionesProgramas2023CEPREVIDE_7);
-        function pop_BaseCentroMunicipaldePrevencinCEPREVIDE_8(feature, layer) {
-            layer.on({
-                mouseout: function(e) {
-                    for (var i in e.target._eventParents) {
-                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
-                            e.target._eventParents[i].resetStyle(e.target);
-                        }
-                    }
-                },
-                mouseover: highlightFeature,
-            });
+        bounds_group.addLayer(layer_AccionesdePrevencin2023CEPREVIDE_8);
+        cluster_AccionesdePrevencin2023CEPREVIDE_8.addTo(map);
+        function pop_CentroMunicipaldePrevencinCEPREVIDE_9(feature, layer) {
             var popupContent = '<table>\
                     <tr>\
-                        <td class="visible-with-data" id="NOM_MUN"colspan="2"><strong>MUNICIPIO</strong><br />' + (feature.properties['NOM_MUN'] !== null ? autolinker.link(feature.properties['NOM_MUN'].toLocaleString()) : '') + '</td>\
+                        <th scope="row">MUNICIPIO</th>\
+                        <td>' + (feature.properties['NOM_MUN'] !== null ? autolinker.link(feature.properties['NOM_MUN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">CENTRO DE PREVENCIÓN MUNICIPAL</th>\
+                        <td>' + (feature.properties['CMP'] !== null ? autolinker.link(feature.properties['CMP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">APOYADO EN</th>\
+                        <td>' + (feature.properties['EJERCICIO'] !== null ? autolinker.link(feature.properties['EJERCICIO'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">LOCALIDAD</th>\
@@ -1103,14 +1097,6 @@
                         <th scope="row">POBLACIÓN TOTAL</th>\
                         <td>' + (feature.properties['POB_TOTAL'] !== null ? autolinker.link(feature.properties['POB_TOTAL'].toLocaleString()) : '') + '</td>\
                     </tr>\
-                    <tr>\
-                        <th scope="row">ETAPA</th>\
-                        <td>' + (feature.properties['ETAPA'] !== null ? autolinker.link(feature.properties['ETAPA'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">CENTRO MUNICIPAL DE PREVENCIÓN</th>\
-                        <td>' + (feature.properties['CEN_MUN'] !== null ? autolinker.link(feature.properties['CEN_MUN'].toLocaleString()) : '') + '</td>\
-                    </tr>\
                 </table>';
             var content = removeEmptyRowsFromPopupContent(popupContent, feature);
 			layer.on('popupopen', function(e) {
@@ -1119,45 +1105,42 @@
 			layer.bindPopup(content, { maxHeight: 400 });
         }
 
-        function style_BaseCentroMunicipaldePrevencinCEPREVIDE_8_0() {
+        function style_CentroMunicipaldePrevencinCEPREVIDE_9_0() {
             return {
-                pane: 'pane_BaseCentroMunicipaldePrevencinCEPREVIDE_8',
-                radius: 5.6000000000000005,
-                opacity: 1,
-                color: 'rgba(250,250,26,0.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 2.0,
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(255,127,0,1.0)',
+                pane: 'pane_CentroMunicipaldePrevencinCEPREVIDE_9',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/CentroMunicipaldePrevencinCEPREVIDE_9.svg',
+            iconSize: [19.0, 19.0]
+        }),
                 interactive: true,
             }
         }
-        map.createPane('pane_BaseCentroMunicipaldePrevencinCEPREVIDE_8');
-        map.getPane('pane_BaseCentroMunicipaldePrevencinCEPREVIDE_8').style.zIndex = 408;
-        map.getPane('pane_BaseCentroMunicipaldePrevencinCEPREVIDE_8').style['mix-blend-mode'] = 'normal';
-        var layer_BaseCentroMunicipaldePrevencinCEPREVIDE_8 = new L.geoJson(json_BaseCentroMunicipaldePrevencinCEPREVIDE_8, {
+        map.createPane('pane_CentroMunicipaldePrevencinCEPREVIDE_9');
+        map.getPane('pane_CentroMunicipaldePrevencinCEPREVIDE_9').style.zIndex = 409;
+        map.getPane('pane_CentroMunicipaldePrevencinCEPREVIDE_9').style['mix-blend-mode'] = 'normal';
+        var layer_CentroMunicipaldePrevencinCEPREVIDE_9 = new L.geoJson(json_CentroMunicipaldePrevencinCEPREVIDE_9, {
             attribution: '',
             interactive: true,
-            dataVar: 'json_BaseCentroMunicipaldePrevencinCEPREVIDE_8',
-            layerName: 'layer_BaseCentroMunicipaldePrevencinCEPREVIDE_8',
-            pane: 'pane_BaseCentroMunicipaldePrevencinCEPREVIDE_8',
-            onEachFeature: pop_BaseCentroMunicipaldePrevencinCEPREVIDE_8,
+            dataVar: 'json_CentroMunicipaldePrevencinCEPREVIDE_9',
+            layerName: 'layer_CentroMunicipaldePrevencinCEPREVIDE_9',
+            pane: 'pane_CentroMunicipaldePrevencinCEPREVIDE_9',
+            onEachFeature: pop_CentroMunicipaldePrevencinCEPREVIDE_9,
             pointToLayer: function (feature, latlng) {
                 var context = {
                     feature: feature,
                     variables: {}
                 };
-                return L.circleMarker(latlng, style_BaseCentroMunicipaldePrevencinCEPREVIDE_8_0(feature));
+                return L.marker(latlng, style_CentroMunicipaldePrevencinCEPREVIDE_9_0(feature));
             },
         });
-        var cluster_BaseCentroMunicipaldePrevencinCEPREVIDE_8 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+        var cluster_CentroMunicipaldePrevencinCEPREVIDE_9 = new L.MarkerClusterGroup({showCoverageOnHover: false,
             spiderfyDistanceMultiplier: 2});
-        cluster_BaseCentroMunicipaldePrevencinCEPREVIDE_8.addLayer(layer_BaseCentroMunicipaldePrevencinCEPREVIDE_8);
+        cluster_CentroMunicipaldePrevencinCEPREVIDE_9.addLayer(layer_CentroMunicipaldePrevencinCEPREVIDE_9);
 
-        bounds_group.addLayer(layer_BaseCentroMunicipaldePrevencinCEPREVIDE_8);
+        bounds_group.addLayer(layer_CentroMunicipaldePrevencinCEPREVIDE_9);
+        cluster_CentroMunicipaldePrevencinCEPREVIDE_9.addTo(map);
         var osmGeocoder = new L.Control.Geocoder({
             collapsed: true,
             position: 'topleft',
@@ -1170,12 +1153,13 @@
         .title += 'Search for a place';
         var baseMaps = {};
         var overlaysTree = [
-            {label: '<img src="legend/BaseCentroMunicipaldePrevencinCEPREVIDE_8.png" /> Base Centro Municipal de Prevención CEPREVIDE', layer: cluster_BaseCentroMunicipaldePrevencinCEPREVIDE_8},
-            {label: '<img src="legend/BaseAccionesProgramas2023CEPREVIDE_7.png" /> Base Acciones /Programas 2023 CEPREVIDE', layer: cluster_BaseAccionesProgramas2023CEPREVIDE_7},
-            {label: 'Base Municipios General Plataforma<br /><table><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralPlataforma_6_156197350.png" /></td><td>   1,561 -     9,735</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralPlataforma_6_9735164801.png" /></td><td>  9,735 -    16,480</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralPlataforma_6_16480249642.png" /></td><td>16 480 -    24,964</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralPlataforma_6_24964473963.png" /></td><td>24,964 -   47,396</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralPlataforma_6_473966235614.png" /></td><td>47,396 - 623,561</td></tr></table>', layer: layer_BaseMunicipiosGeneralPlataforma_6},
-            {label: 'Base Zonas Metropolitanas CEPREVIDE<br /><table><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_5_301770.png" /></td><td>301.77</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_5_327611.png" /></td><td>327.61</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_5_331922.png" /></td><td>331.92</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_5_349693.png" /></td><td>349.69</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_5_442154.png" /></td><td>442.15</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_5_460665.png" /></td><td>460.66</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_5_516646.png" /></td><td>516.64</td></tr><tr><td style="text-align: center;"><img src="legend/BaseZonasMetropolitanasCEPREVIDE_5_542947.png" /></td><td>542.94</td></tr></table>', layer: layer_BaseZonasMetropolitanasCEPREVIDE_5},
-            {label: 'Base Regiones CEPREVIDE<br /><table><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_739450.png" /></td><td>739.45</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_748531.png" /></td><td>748.53</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_848692.png" /></td><td>848.69</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_858503.png" /></td><td>858.50</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_866654.png" /></td><td>866.65</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_882345.png" /></td><td>882.34</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_901516.png" /></td><td>901.51</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_947417.png" /></td><td>947.41</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_1131168.png" /></td><td>1131.16</td></tr><tr><td style="text-align: center;"><img src="legend/BaseRegionesCEPREVIDE_4_1524629.png" /></td><td>1524.62</td></tr></table>', layer: layer_BaseRegionesCEPREVIDE_4},
-            {label: 'Base Municipios General CEPREVIDE<br /><table><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralCEPREVIDE_3_1MuyAlta0.png" /></td><td>1.Muy Alta</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralCEPREVIDE_3_2Alta1.png" /></td><td>2.Alta</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralCEPREVIDE_3_3Media2.png" /></td><td>3.Media</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralCEPREVIDE_3_4Baja3.png" /></td><td>4.Baja</td></tr><tr><td style="text-align: center;"><img src="legend/BaseMunicipiosGeneralCEPREVIDE_3_5MuyBaja4.png" /></td><td>5.Muy Baja</td></tr></table>', layer: layer_BaseMunicipiosGeneralCEPREVIDE_3},
+            {label: '<img src="legend/CentroMunicipaldePrevencinCEPREVIDE_9.png" /> Centro Municipal de Prevención CEPREVIDE', layer: cluster_CentroMunicipaldePrevencinCEPREVIDE_9},
+            {label: '<img src="legend/AccionesdePrevencin2023CEPREVIDE_8.png" /> Acciones de Prevención 2023 CEPREVIDE', layer: cluster_AccionesdePrevencin2023CEPREVIDE_8},
+            {label: '<img src="legend/AccionesdePrevencin2019CEPREVIDE_7.png" /> Acciones de Prevención 2019 CEPREVIDE', layer: cluster_AccionesdePrevencin2019CEPREVIDE_7},
+            {label: 'Grado de Marginación (P.M.)<br /><table><tr><td style="text-align: center;"><img src="legend/GradodeMarginacinPM_6_MUYALTO0.png" /></td><td>MUY ALTO</td></tr><tr><td style="text-align: center;"><img src="legend/GradodeMarginacinPM_6_ALTO1.png" /></td><td>ALTO</td></tr><tr><td style="text-align: center;"><img src="legend/GradodeMarginacinPM_6_MEDIO2.png" /></td><td>MEDIO</td></tr><tr><td style="text-align: center;"><img src="legend/GradodeMarginacinPM_6_BAJO3.png" /></td><td>BAJO</td></tr><tr><td style="text-align: center;"><img src="legend/GradodeMarginacinPM_6_MUYBAJO4.png" /></td><td>MUY BAJO</td></tr></table>', layer: layer_GradodeMarginacinPM_6},
+            {label: 'Incidencia Delectiva (Tasa) 2024 Z. Metropolitanas<br /><table><tr><td style="text-align: center;"><img src="legend/IncidenciaDelectivaTasa2024ZMetropolitanas_5_301770.png" /></td><td>301.77</td></tr><tr><td style="text-align: center;"><img src="legend/IncidenciaDelectivaTasa2024ZMetropolitanas_5_327611.png" /></td><td>327.61</td></tr><tr><td style="text-align: center;"><img src="legend/IncidenciaDelectivaTasa2024ZMetropolitanas_5_331922.png" /></td><td>331.92</td></tr><tr><td style="text-align: center;"><img src="legend/IncidenciaDelectivaTasa2024ZMetropolitanas_5_349693.png" /></td><td>349.69</td></tr><tr><td style="text-align: center;"><img src="legend/IncidenciaDelectivaTasa2024ZMetropolitanas_5_442154.png" /></td><td>442.15</td></tr><tr><td style="text-align: center;"><img src="legend/IncidenciaDelectivaTasa2024ZMetropolitanas_5_460665.png" /></td><td>460.66</td></tr><tr><td style="text-align: center;"><img src="legend/IncidenciaDelectivaTasa2024ZMetropolitanas_5_516646.png" /></td><td>516.64</td></tr><tr><td style="text-align: center;"><img src="legend/IncidenciaDelectivaTasa2024ZMetropolitanas_5_542947.png" /></td><td>542.94</td></tr></table>', layer: layer_IncidenciaDelectivaTasa2024ZMetropolitanas_5},
+            {label: 'Incidencia Delictiva (Tasa) 2024 Regiones<br /><table><tr><td style="text-align: center;"><img src="legend/IncidenciaDelictivaTasa2024Regiones_4_739450.png" /></td><td>739.45</td></tr><tr><td style="text-align: center;"><img src="legend/IncidenciaDelictivaTasa2024Regiones_4_748531.png" /></td><td>748.53</td></tr><tr><td style="text-align: center;"><img src="legend/IncidenciaDelictivaTasa2024Regiones_4_848692.png" /></td><td>848.69</td></tr><tr><td style="text-align: center;"><img src="legend/IncidenciaDelictivaTasa2024Regiones_4_858503.png" /></td><td>858.50</td></tr><tr><td style="text-align: center;"><img src="legend/IncidenciaDelictivaTasa2024Regiones_4_866654.png" /></td><td>866.65</td></tr><tr><td style="text-align: center;"><img src="legend/IncidenciaDelictivaTasa2024Regiones_4_882345.png" /></td><td>882.34</td></tr><tr><td style="text-align: center;"><img src="legend/IncidenciaDelictivaTasa2024Regiones_4_901516.png" /></td><td>901.51</td></tr><tr><td style="text-align: center;"><img src="legend/IncidenciaDelictivaTasa2024Regiones_4_947417.png" /></td><td>947.41</td></tr><tr><td style="text-align: center;"><img src="legend/IncidenciaDelictivaTasa2024Regiones_4_1131168.png" /></td><td>1131.16</td></tr><tr><td style="text-align: center;"><img src="legend/IncidenciaDelictivaTasa2024Regiones_4_1524629.png" /></td><td>1524.62</td></tr></table>', layer: layer_IncidenciaDelictivaTasa2024Regiones_4},
+            {label: 'Grado de Incidencia Delictiva 2024<br /><table><tr><td style="text-align: center;"><img src="legend/GradodeIncidenciaDelictiva2024_3_1MuyAlta0.png" /></td><td>1.Muy Alta</td></tr><tr><td style="text-align: center;"><img src="legend/GradodeIncidenciaDelictiva2024_3_2Alta1.png" /></td><td>2.Alta</td></tr><tr><td style="text-align: center;"><img src="legend/GradodeIncidenciaDelictiva2024_3_3Media2.png" /></td><td>3.Media</td></tr><tr><td style="text-align: center;"><img src="legend/GradodeIncidenciaDelictiva2024_3_4Baja3.png" /></td><td>4.Baja</td></tr><tr><td style="text-align: center;"><img src="legend/GradodeIncidenciaDelictiva2024_3_5MuyBaja4.png" /></td><td>5.Muy Baja</td></tr></table>', layer: layer_GradodeIncidenciaDelictiva2024_3},
             {label: '<img src="legend/LmiteMunicipalVeracruz_2.png" /> Límite Municipal Veracruz', layer: layer_LmiteMunicipalVeracruz_2},
             {label: '<img src="legend/CoberturalEstatalVeracruz_1.png" /> Cobertural Estatal Veracruz', layer: layer_CoberturalEstatalVeracruz_1},
             {label: "OSM Standard", layer: layer_OSMStandard_0},]
@@ -1191,12 +1175,12 @@
         lay.addTo(map);
         setBounds();
         var i = 0;
-        layer_BaseRegionesCEPREVIDE_4.eachLayer(function(layer) {
+        layer_IncidenciaDelictivaTasa2024Regiones_4.eachLayer(function(layer) {
             var context = {
                 feature: layer.feature,
                 variables: {}
             };
-            layer.bindTooltip((layer.feature.properties['NOM_REG'] !== null?String('<div style="color: #323232; font-size: 7pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['NOM_REG']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_BaseRegionesCEPREVIDE_4'});
+            layer.bindTooltip((layer.feature.properties['NOM_REG'] !== null?String('<div style="color: #323232; font-size: 7pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['NOM_REG']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_IncidenciaDelictivaTasa2024Regiones_4'});
             labels.push(layer);
             totalMarkers += 1;
               layer.added = true;
@@ -1204,34 +1188,27 @@
               i++;
         });
         var i = 0;
-        layer_BaseZonasMetropolitanasCEPREVIDE_5.eachLayer(function(layer) {
+        layer_IncidenciaDelectivaTasa2024ZMetropolitanas_5.eachLayer(function(layer) {
             var context = {
                 feature: layer.feature,
                 variables: {}
             };
-            layer.bindTooltip((layer.feature.properties['NOM_ZM'] !== null?String('<div style="color: #323232; font-size: 7pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['NOM_ZM']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_BaseZonasMetropolitanasCEPREVIDE_5'});
+            layer.bindTooltip((layer.feature.properties['NOM_ZM'] !== null?String('<div style="color: #323232; font-size: 7pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['NOM_ZM']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_IncidenciaDelectivaTasa2024ZMetropolitanas_5'});
             labels.push(layer);
             totalMarkers += 1;
               layer.added = true;
               addLabel(layer, i);
               i++;
         });
-        map.addControl(new L.Control.Search({
-            layer: cluster_BaseMunicipiosGeneralCEPREVIDE_3,
-            initial: false,
-            hideMarkerOnCollapse: true,
-            propertyName: 'NOM_MUN'}));
-        document.getElementsByClassName('search-button')[0].className +=
-         ' fa fa-binoculars';
-        resetLabels([layer_LmiteMunicipalVeracruz_2,layer_BaseMunicipiosGeneralCEPREVIDE_3,layer_BaseRegionesCEPREVIDE_4,layer_BaseZonasMetropolitanasCEPREVIDE_5,layer_BaseMunicipiosGeneralPlataforma_6,layer_BaseCentroMunicipaldePrevencinCEPREVIDE_8]);
+        resetLabels([layer_LmiteMunicipalVeracruz_2,layer_GradodeIncidenciaDelictiva2024_3,layer_IncidenciaDelictivaTasa2024Regiones_4,layer_IncidenciaDelectivaTasa2024ZMetropolitanas_5]);
         map.on("zoomend", function(){
-            resetLabels([layer_LmiteMunicipalVeracruz_2,layer_BaseMunicipiosGeneralCEPREVIDE_3,layer_BaseRegionesCEPREVIDE_4,layer_BaseZonasMetropolitanasCEPREVIDE_5,layer_BaseMunicipiosGeneralPlataforma_6,layer_BaseCentroMunicipaldePrevencinCEPREVIDE_8]);
+            resetLabels([layer_LmiteMunicipalVeracruz_2,layer_GradodeIncidenciaDelictiva2024_3,layer_IncidenciaDelictivaTasa2024Regiones_4,layer_IncidenciaDelectivaTasa2024ZMetropolitanas_5]);
         });
         map.on("layeradd", function(){
-            resetLabels([layer_LmiteMunicipalVeracruz_2,layer_BaseMunicipiosGeneralCEPREVIDE_3,layer_BaseRegionesCEPREVIDE_4,layer_BaseZonasMetropolitanasCEPREVIDE_5,layer_BaseMunicipiosGeneralPlataforma_6,layer_BaseCentroMunicipaldePrevencinCEPREVIDE_8]);
+            resetLabels([layer_LmiteMunicipalVeracruz_2,layer_GradodeIncidenciaDelictiva2024_3,layer_IncidenciaDelictivaTasa2024Regiones_4,layer_IncidenciaDelectivaTasa2024ZMetropolitanas_5]);
         });
         map.on("layerremove", function(){
-            resetLabels([layer_LmiteMunicipalVeracruz_2,layer_BaseMunicipiosGeneralCEPREVIDE_3,layer_BaseRegionesCEPREVIDE_4,layer_BaseZonasMetropolitanasCEPREVIDE_5,layer_BaseMunicipiosGeneralPlataforma_6,layer_BaseCentroMunicipaldePrevencinCEPREVIDE_8]);
+            resetLabels([layer_LmiteMunicipalVeracruz_2,layer_GradodeIncidenciaDelictiva2024_3,layer_IncidenciaDelictivaTasa2024Regiones_4,layer_IncidenciaDelectivaTasa2024ZMetropolitanas_5]);
         });
         </script>
     </body>
